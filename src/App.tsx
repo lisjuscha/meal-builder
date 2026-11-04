@@ -26,6 +26,14 @@ export default function App() {
   const data = useAppData()
   const ingMap = useMemo(() => new Map(data.ingredients.map(i => [i.id, i])), [data.ingredients])
 
+  const builderInitialEntries: SelectedEntry[] = useMemo(() => {
+    if (!builderPreload) return []
+    return builderPreload.entries.flatMap(e => {
+      const ing = ingMap.get(e.ingredientId)
+      return ing ? [{ ingredient: ing, amountGrams: e.amountGrams }] : []
+    })
+  }, [builderPreload, ingMap])
+
   if (!data.ready) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -81,14 +89,6 @@ export default function App() {
     setCyclePhase(v)
     localStorage.setItem('cyclePhase', v)
   }
-
-  const builderInitialEntries: SelectedEntry[] = useMemo(() => {
-    if (!builderPreload) return []
-    return builderPreload.entries.flatMap(e => {
-      const ing = ingMap.get(e.ingredientId)
-      return ing ? [{ ingredient: ing, amountGrams: e.amountGrams }] : []
-    })
-  }, [builderPreload, ingMap])
 
   return (
     <div className="max-w-md mx-auto min-h-screen">
