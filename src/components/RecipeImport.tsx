@@ -63,8 +63,8 @@ export function RecipeImport({ ingredients, onConfirm, onClose }: Props) {
   const unmatched = entries?.filter(e => !e.matched) ?? []
 
   return (
-    <div className="fixed inset-0 bg-white dark:bg-[#000000] z-50 overflow-y-auto">
-      <div className="p-4">
+    <div className="fixed inset-0 bg-white dark:bg-[#000000] z-50 flex flex-col">
+      <div className="flex-1 overflow-y-auto p-4">
         <div className="flex items-center justify-between mb-4">
           <button onClick={onClose} className="text-gray-400 font-medium text-sm">← Zurück</button>
         </div>

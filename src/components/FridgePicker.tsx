@@ -53,8 +53,8 @@ export function FridgePicker({ ingredients, onConfirm, onClose }: Props) {
   }
 
   return (
-    <div className="fixed inset-0 bg-white dark:bg-[#000000] z-50 overflow-y-auto">
-      <div className="p-4">
+    <div className="fixed inset-0 bg-white dark:bg-[#000000] z-50 flex flex-col">
+      <div className="flex-1 overflow-y-auto p-4">
         <div className="flex items-center justify-between mb-4">
           <button onClick={onClose} className="text-gray-400 font-medium text-sm">← Zurück</button>
           <span className="text-sm text-gray-400">{selected.size} ausgewählt</span>
@@ -111,18 +111,18 @@ export function FridgePicker({ ingredients, onConfirm, onClose }: Props) {
             )
           })}
         </div>
-
-        {selected.size > 0 && (
-          <div className="sticky bottom-6 mt-4">
-            <button
-              onClick={suggestAndConfirm}
-              className="w-full bg-orange-500 text-white rounded-xl py-3.5 font-bold text-base"
-            >
-              Meal Builder öffnen →
-            </button>
-          </div>
-        )}
       </div>
+
+      {selected.size > 0 && (
+        <div className="p-4 pb-6 bg-white dark:bg-[#000000]">
+          <button
+            onClick={suggestAndConfirm}
+            className="w-full bg-orange-500 text-white rounded-xl py-3.5 font-bold text-base"
+          >
+            Meal Builder öffnen →
+          </button>
+        </div>
+      )}
     </div>
   )
 }
