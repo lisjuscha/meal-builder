@@ -55,7 +55,7 @@ export function MacroRing({ proteinG, carbsG, fatG, size = 120 }: Props) {
         {segments.map(s => (
           <div key={s.label} className="flex items-center gap-2">
             <span className="w-2.5 h-2.5 rounded-full inline-block" style={{ background: s.color }} />
-            <span className="text-gray-500 dark:text-gray-400">{s.label}</span>
+            <span className="text-gray-500 dark:text-[#aeaeb2]">{s.label}</span>
             <span className="font-medium ml-auto pl-2">{Math.round(s.value)}g</span>
           </div>
         ))}

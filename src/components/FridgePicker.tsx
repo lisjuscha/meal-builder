@@ -53,7 +53,7 @@ export function FridgePicker({ ingredients, onConfirm, onClose }: Props) {
   }
 
   return (
-    <div className="fixed inset-0 bg-white dark:bg-gray-950 z-50 overflow-y-auto">
+    <div className="fixed inset-0 bg-white dark:bg-[#000000] z-50 overflow-y-auto">
       <div className="p-4">
         <div className="flex items-center justify-between mb-4">
           <button onClick={onClose} className="text-gray-400 font-medium text-sm">← Zurück</button>
@@ -78,8 +78,8 @@ export function FridgePicker({ ingredients, onConfirm, onClose }: Props) {
             const catIngredients = ingredients.filter(i => i.category === cat)
             if (catIngredients.length === 0) return null
             return (
-              <div key={cat} className="bg-white dark:bg-gray-900 rounded-xl overflow-hidden">
-                <div className="px-4 py-2.5 border-b border-gray-100 dark:border-gray-800">
+              <div key={cat} className="bg-white dark:bg-[#1c1c1e] rounded-xl overflow-hidden">
+                <div className="px-4 py-2.5 border-b border-gray-100 dark:border-[#38383a]">
                   <span className="font-semibold text-sm">{cat}</span>
                 </div>
                 <div className="flex flex-wrap gap-2 p-3">
@@ -94,7 +94,7 @@ export function FridgePicker({ ingredients, onConfirm, onClose }: Props) {
                         className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium border transition-all ${
                           isSelected
                             ? 'bg-orange-500 border-orange-500 text-white'
-                            : 'bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300'
+                            : 'bg-gray-50 dark:bg-[#2c2c2e] border-gray-200 dark:border-[#48484a] text-gray-700 dark:text-[#c7c7cc]'
                         }`}
                       >
                         {isSelected && <Check size={12} />}

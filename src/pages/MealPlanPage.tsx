@@ -55,8 +55,8 @@ export function MealPlanPage({ plannedMeals, meals, onAdd, onRemove, onOpenBuild
 
       <div className="space-y-3">
         {days.map(day => (
-          <div key={day.date} className="bg-white dark:bg-gray-900 rounded-xl overflow-hidden">
-            <div className="px-4 py-2.5 border-b border-gray-100 dark:border-gray-800">
+          <div key={day.date} className="bg-white dark:bg-[#1c1c1e] rounded-xl overflow-hidden">
+            <div className="px-4 py-2.5 border-b border-gray-100 dark:border-[#38383a]">
               <span className="font-semibold text-sm">{day.label}</span>
             </div>
             <div className="divide-y divide-gray-100 dark:divide-gray-800">
@@ -73,7 +73,7 @@ export function MealPlanPage({ plannedMeals, meals, onAdd, onRemove, onOpenBuild
                         </span>
                         <button
                           onClick={() => onRemove(planned.id)}
-                          className="text-gray-300 dark:text-gray-600 text-xs ml-2 shrink-0"
+                          className="text-gray-300 dark:text-[#636366] text-xs ml-2 shrink-0"
                         >✕</button>
                       </div>
                     ) : (
@@ -95,8 +95,8 @@ export function MealPlanPage({ plannedMeals, meals, onAdd, onRemove, onOpenBuild
       {/* Meal picker modal */}
       {showPicker && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-end" onClick={() => setShowPicker(null)}>
-          <div className="bg-white dark:bg-gray-900 w-full rounded-t-3xl max-h-[70vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
-            <div className="px-4 pt-4 pb-2 border-b border-gray-100 dark:border-gray-800">
+          <div className="bg-white dark:bg-[#1c1c1e] w-full rounded-t-3xl max-h-[70vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+            <div className="px-4 pt-4 pb-2 border-b border-gray-100 dark:border-[#38383a]">
               <h3 className="font-bold">Meal auswählen</h3>
               <p className="text-xs text-gray-400">{showPicker.mealType}</p>
             </div>

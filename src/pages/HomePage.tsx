@@ -71,12 +71,12 @@ export function HomePage({ meals, templates, ingredients, onRemoveMeal, onRemove
   return (
     <div className="px-4 pt-4 pb-6 space-y-4">
       {/* Today summary */}
-      <div className="bg-white dark:bg-gray-900 rounded-xl p-4">
+      <div className="bg-white dark:bg-[#1c1c1e] rounded-xl p-4">
         <div className="flex items-center justify-between mb-2">
           <span className="font-bold text-base">Heute</span>
           <span className="text-sm text-gray-400">{Math.round(totals.kcal)} / {dailyGoal} kcal</span>
         </div>
-        <div className="w-full h-2 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden mb-3">
+        <div className="w-full h-2 bg-gray-100 dark:bg-[#2c2c2e] rounded-full overflow-hidden mb-3">
           <div className={`h-full rounded-full transition-all ${progress >= 1 ? 'bg-green-500' : 'bg-orange-500'}`} style={{ width: `${progress * 100}%` }} />
         </div>
         {totals.protein + totals.carbs + totals.fat > 0 && (
@@ -94,17 +94,17 @@ export function HomePage({ meals, templates, ingredients, onRemoveMeal, onRemove
         <button onClick={() => onOpenBuilder()} className="bg-orange-500 text-white rounded-xl py-3 text-xs font-semibold flex flex-col items-center gap-1">
           <ChevronRight size={18} /> Neues Meal
         </button>
-        <button onClick={onOpenFridge} className="bg-white dark:bg-gray-900 rounded-xl py-3 text-xs font-medium flex flex-col items-center gap-1 text-gray-600 dark:text-gray-300">
+        <button onClick={onOpenFridge} className="bg-white dark:bg-[#1c1c1e] rounded-xl py-3 text-xs font-medium flex flex-col items-center gap-1 text-gray-600 dark:text-[#c7c7cc]">
           <Refrigerator size={18} /> Was hab ich?
         </button>
-        <button onClick={onOpenImport} className="bg-white dark:bg-gray-900 rounded-xl py-3 text-xs font-medium flex flex-col items-center gap-1 text-gray-600 dark:text-gray-300">
+        <button onClick={onOpenImport} className="bg-white dark:bg-[#1c1c1e] rounded-xl py-3 text-xs font-medium flex flex-col items-center gap-1 text-gray-600 dark:text-[#c7c7cc]">
           <FileText size={18} /> Importieren
         </button>
       </div>
-      <button onClick={onOpenPlan} className="w-full bg-white dark:bg-gray-900 rounded-xl py-3 text-sm font-medium flex items-center justify-center gap-2 text-gray-600 dark:text-gray-300">
+      <button onClick={onOpenPlan} className="w-full bg-white dark:bg-[#1c1c1e] rounded-xl py-3 text-sm font-medium flex items-center justify-center gap-2 text-gray-600 dark:text-[#c7c7cc]">
         <Calendar size={16} /> Mahlzeitenplan
       </button>
-      <div className="bg-white dark:bg-gray-900 rounded-xl p-4">
+      <div className="bg-white dark:bg-[#1c1c1e] rounded-xl p-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2 text-blue-500">
             <Droplets size={18} />
@@ -123,10 +123,10 @@ export function HomePage({ meals, templates, ingredients, onRemoveMeal, onRemove
       {/* Templates */}
       {templates.length > 0 && (
         <div>
-          <h2 className="font-semibold text-sm text-gray-500 dark:text-gray-400 mb-2 px-1">Vorlagen</h2>
+          <h2 className="font-semibold text-sm text-gray-500 dark:text-[#aeaeb2] mb-2 px-1">Vorlagen</h2>
           <div className="flex gap-3 overflow-x-auto pb-1">
             {templates.map(t => (
-              <div key={t.id} className="shrink-0 w-28 bg-white dark:bg-gray-900 rounded-xl p-3">
+              <div key={t.id} className="shrink-0 w-28 bg-white dark:bg-[#1c1c1e] rounded-xl p-3">
                 <div className="text-xs font-semibold leading-tight mb-1 line-clamp-2 text-orange-500">{t.title || t.mealType}</div>
                 <div className="text-[10px] text-gray-400 mb-2">{t.mealType} · {t.ingredientEntries.length} Zutaten</div>
                 <div className="flex gap-1">
@@ -134,7 +134,7 @@ export function HomePage({ meals, templates, ingredients, onRemoveMeal, onRemove
                     onClick={() => onOpenBuilder({ entries: t.ingredientEntries })}
                     className="flex-1 text-[10px] bg-orange-500 text-white rounded-lg py-1 font-medium"
                   >Benutzen</button>
-                  <button onClick={() => onRemoveTemplate(t.id)} className="text-gray-300 dark:text-gray-600 px-1">
+                  <button onClick={() => onRemoveTemplate(t.id)} className="text-gray-300 dark:text-[#636366] px-1">
                     <Trash2 size={12} />
                   </button>
                 </div>
@@ -146,20 +146,20 @@ export function HomePage({ meals, templates, ingredients, onRemoveMeal, onRemove
 
       {/* Today's meals */}
       <div>
-        <h2 className="font-semibold text-sm text-gray-500 dark:text-gray-400 mb-2 px-1">Bisherige Meals</h2>
+        <h2 className="font-semibold text-sm text-gray-500 dark:text-[#aeaeb2] mb-2 px-1">Bisherige Meals</h2>
         {meals.length === 0 ? (
-          <div className="bg-white dark:bg-gray-900 rounded-xl p-6 text-center text-sm text-gray-400">
+          <div className="bg-white dark:bg-[#1c1c1e] rounded-xl p-6 text-center text-sm text-gray-400">
             Noch keine Meals gespeichert
           </div>
         ) : (
-          <div className="bg-white dark:bg-gray-900 rounded-xl overflow-hidden">
+          <div className="bg-white dark:bg-[#1c1c1e] rounded-xl overflow-hidden">
             {meals.map((meal, i) => {
               const rating = meal.generatedRecipe ? getNutritionRating(meal.generatedRecipe, meal.mealType) : null
               return (
                 <button
                   key={meal.id}
                   onClick={() => setSelectedMeal(meal)}
-                  className={`w-full flex items-center gap-3 px-4 py-3 text-left ${i < meals.length - 1 ? 'border-b border-gray-100 dark:border-gray-800' : ''}`}
+                  className={`w-full flex items-center gap-3 px-4 py-3 text-left ${i < meals.length - 1 ? 'border-b border-gray-100 dark:border-[#38383a]' : ''}`}
                 >
                   {rating && <span className={`w-2.5 h-2.5 rounded-full shrink-0 ${TRAFFIC_COLORS[rating]}`} />}
                   <div className="flex-1 min-w-0">

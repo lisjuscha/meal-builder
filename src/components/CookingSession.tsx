@@ -24,7 +24,7 @@ export function CookingSession({ recipe, onClose }: Props) {
   }, [])
 
   return (
-    <div className="fixed inset-0 bg-gray-950 z-[100] flex flex-col text-white">
+    <div className="fixed inset-0 bg-[#000000] z-[100] flex flex-col text-white">
       {/* Header */}
       <div className="flex items-center justify-between px-4 pt-12 pb-4">
         <button onClick={onClose} className="text-gray-400 text-sm">Beenden</button>

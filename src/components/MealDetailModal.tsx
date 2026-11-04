@@ -35,7 +35,7 @@ export function MealDetailModal({ meal, ingredients, onClose, onDelete, onUpdate
   }
 
   return (
-    <div className="fixed inset-0 bg-white dark:bg-gray-950 z-50 overflow-y-auto">
+    <div className="fixed inset-0 bg-white dark:bg-[#000000] z-50 overflow-y-auto">
       <div className="p-4">
         <div className="flex items-center justify-between mb-4">
           <button onClick={onClose} className="text-gray-400 font-medium text-sm">← Zurück</button>
@@ -89,11 +89,11 @@ export function MealDetailModal({ meal, ingredients, onClose, onDelete, onUpdate
 
         {/* Ingredients */}
         <h3 className="font-semibold mb-2">Zutaten</h3>
-        <div className="bg-gray-50 dark:bg-gray-900 rounded-xl overflow-hidden mb-6">
+        <div className="bg-gray-50 dark:bg-[#1c1c1e] rounded-xl overflow-hidden mb-6">
           {meal.ingredientEntries.map((entry, i) => {
             const ing = ingMap.get(entry.ingredientId)
             return (
-              <div key={i} className="flex items-center justify-between px-4 py-2.5 border-b border-gray-100 dark:border-gray-800 last:border-b-0 text-sm">
+              <div key={i} className="flex items-center justify-between px-4 py-2.5 border-b border-gray-100 dark:border-[#38383a] last:border-b-0 text-sm">
                 <span>{ing?.name ?? entry.ingredientId}</span>
                 <span className="text-gray-400">{Math.round(entry.amountGrams)} g</span>
               </div>
@@ -111,7 +111,7 @@ export function MealDetailModal({ meal, ingredients, onClose, onDelete, onUpdate
           ))}
         </div>
         <textarea
-          className="w-full border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-sm bg-transparent mb-4 resize-none"
+          className="w-full border border-gray-200 dark:border-[#48484a] rounded-xl px-4 py-3 text-sm bg-transparent mb-4 resize-none"
           rows={3}
           placeholder="Notiz (optional)"
           value={note}
@@ -122,10 +122,10 @@ export function MealDetailModal({ meal, ingredients, onClose, onDelete, onUpdate
         </button>
 
         <div className="flex gap-2">
-          <button onClick={() => onAddToShopping(meal)} className="flex-1 bg-gray-100 dark:bg-gray-800 rounded-xl py-3 text-sm font-medium flex items-center justify-center gap-2">
+          <button onClick={() => onAddToShopping(meal)} className="flex-1 bg-gray-100 dark:bg-[#2c2c2e] rounded-xl py-3 text-sm font-medium flex items-center justify-center gap-2">
             <ShoppingCart size={15} /> Einkaufsliste
           </button>
-          <button onClick={onReuse} className="flex-1 bg-gray-100 dark:bg-gray-800 rounded-xl py-3 text-sm font-medium flex items-center justify-center gap-2">
+          <button onClick={onReuse} className="flex-1 bg-gray-100 dark:bg-[#2c2c2e] rounded-xl py-3 text-sm font-medium flex items-center justify-center gap-2">
             <RotateCcw size={15} /> Wiederholen
           </button>
         </div>

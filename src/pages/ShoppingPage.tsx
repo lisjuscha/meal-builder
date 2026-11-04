@@ -24,26 +24,26 @@ export function ShoppingPage({ items, ingredients, onToggle, onRemove, onClear }
       </div>
 
       {items.length === 0 ? (
-        <div className="bg-white dark:bg-gray-900 rounded-xl p-8 text-center text-sm text-gray-400">
+        <div className="bg-white dark:bg-[#1c1c1e] rounded-xl p-8 text-center text-sm text-gray-400">
           Noch keine Artikel.<br />Füge Zutaten aus einem Meal hinzu.
         </div>
       ) : (
         <div className="space-y-3">
           {unchecked.length > 0 && (
-            <div className="bg-white dark:bg-gray-900 rounded-xl overflow-hidden">
+            <div className="bg-white dark:bg-[#1c1c1e] rounded-xl overflow-hidden">
               {unchecked.map((item, i) => {
                 const ing = ingMap.get(item.ingredientId)
                 return (
-                  <div key={item.id} className={`flex items-center gap-3 px-4 py-3 ${i < unchecked.length - 1 ? 'border-b border-gray-100 dark:border-gray-800' : ''}`}>
+                  <div key={item.id} className={`flex items-center gap-3 px-4 py-3 ${i < unchecked.length - 1 ? 'border-b border-gray-100 dark:border-[#38383a]' : ''}`}>
                     <button
                       onClick={() => onToggle(item)}
-                      className="w-6 h-6 rounded-full border-2 border-gray-300 dark:border-gray-600 shrink-0"
+                      className="w-6 h-6 rounded-full border-2 border-gray-300 dark:border-[#48484a] shrink-0"
                     />
                     <div className="flex-1 text-sm">
                       <span className="font-medium">{ing?.name ?? item.ingredientId}</span>
                       <span className="text-gray-400 ml-2">{Math.round(item.amountGrams)} g</span>
                     </div>
-                    <button onClick={() => onRemove(item.id)} className="text-gray-300 dark:text-gray-600">
+                    <button onClick={() => onRemove(item.id)} className="text-gray-300 dark:text-[#636366]">
                       <Trash2 size={14} />
                     </button>
                   </div>
@@ -53,11 +53,11 @@ export function ShoppingPage({ items, ingredients, onToggle, onRemove, onClear }
           )}
 
           {checked.length > 0 && (
-            <div className="bg-white dark:bg-gray-900 rounded-xl overflow-hidden opacity-50">
+            <div className="bg-white dark:bg-[#1c1c1e] rounded-xl overflow-hidden opacity-50">
               {checked.map((item, i) => {
                 const ing = ingMap.get(item.ingredientId)
                 return (
-                  <div key={item.id} className={`flex items-center gap-3 px-4 py-3 ${i < checked.length - 1 ? 'border-b border-gray-100 dark:border-gray-800' : ''}`}>
+                  <div key={item.id} className={`flex items-center gap-3 px-4 py-3 ${i < checked.length - 1 ? 'border-b border-gray-100 dark:border-[#38383a]' : ''}`}>
                     <button
                       onClick={() => onToggle(item)}
                       className="w-6 h-6 rounded-full border-2 border-green-400 bg-green-400 shrink-0 flex items-center justify-center"

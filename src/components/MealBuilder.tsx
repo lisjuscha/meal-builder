@@ -73,7 +73,7 @@ export function MealBuilder({ ingredients, initialEntries = [], initialMealType 
           {MEAL_TYPES.map(t => (
             <button key={t} onClick={() => setMealType(t)}
               className={`shrink-0 px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
-                mealType === t ? 'bg-orange-500 text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300'
+                mealType === t ? 'bg-orange-500 text-white' : 'bg-gray-100 dark:bg-[#2c2c2e] text-gray-600 dark:text-[#c7c7cc]'
               }`}>
               {t}
             </button>
@@ -88,7 +88,7 @@ export function MealBuilder({ ingredients, initialEntries = [], initialMealType 
           const isOpen = openCat === cat
           const selectedInCat = selected.filter(e => e.ingredient.category === cat).length
           return (
-            <div key={cat} className="bg-white dark:bg-gray-900 rounded-xl overflow-hidden">
+            <div key={cat} className="bg-white dark:bg-[#1c1c1e] rounded-xl overflow-hidden">
               <button
                 onClick={() => setOpenCat(isOpen ? null : cat)}
                 className="w-full flex items-center justify-between px-4 py-3"
@@ -104,19 +104,19 @@ export function MealBuilder({ ingredients, initialEntries = [], initialMealType 
                 {isOpen ? <ChevronUp size={16} className="text-gray-400" /> : <ChevronDown size={16} className="text-gray-400" />}
               </button>
               {isOpen && (
-                <div className="border-t border-gray-100 dark:border-gray-800">
+                <div className="border-t border-gray-100 dark:border-[#38383a]">
                   {catIngredients.map(ing => {
                     const entry = selected.find(e => e.ingredient.id === ing.id)
                     const isSelected = !!entry
                     const tags = getHealthTags(ing)
                     const seasonal = isInSeason(ing.name)
                     return (
-                      <div key={ing.id} className={`px-4 py-2.5 border-b border-gray-50 dark:border-gray-800 last:border-b-0 ${isSelected ? 'bg-orange-50 dark:bg-orange-950' : ''}`}>
+                      <div key={ing.id} className={`px-4 py-2.5 border-b border-gray-50 dark:border-[#38383a] last:border-b-0 ${isSelected ? 'bg-orange-50 dark:bg-orange-950' : ''}`}>
                         <div className="flex items-center gap-3">
                           <button
                             onClick={() => toggleIngredient(ing)}
                             className={`w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors ${
-                              isSelected ? 'bg-orange-500 border-orange-500' : 'border-gray-300 dark:border-gray-600'
+                              isSelected ? 'bg-orange-500 border-orange-500' : 'border-gray-300 dark:border-[#48484a]'
                             }`}
                           >
                             {isSelected && <Check size={12} className="text-white" />}
@@ -133,9 +133,9 @@ export function MealBuilder({ ingredients, initialEntries = [], initialMealType 
                           </div>
                           {isSelected && (
                             <div className="flex items-center gap-1 shrink-0">
-                              <button onClick={() => updateAmount(ing.id, (entry?.amountGrams ?? 0) - 25)} className="w-7 h-7 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-sm font-bold">−</button>
+                              <button onClick={() => updateAmount(ing.id, (entry?.amountGrams ?? 0) - 25)} className="w-7 h-7 rounded-full bg-gray-100 dark:bg-[#2c2c2e] flex items-center justify-center text-sm font-bold">−</button>
                               <span className="w-14 text-center text-xs font-medium">{Math.round(entry?.amountGrams ?? 0)}g</span>
-                              <button onClick={() => updateAmount(ing.id, (entry?.amountGrams ?? 0) + 25)} className="w-7 h-7 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-sm font-bold">+</button>
+                              <button onClick={() => updateAmount(ing.id, (entry?.amountGrams ?? 0) + 25)} className="w-7 h-7 rounded-full bg-gray-100 dark:bg-[#2c2c2e] flex items-center justify-center text-sm font-bold">+</button>
                             </div>
                           )}
                         </div>
@@ -151,7 +151,7 @@ export function MealBuilder({ ingredients, initialEntries = [], initialMealType 
 
       {/* Live macros */}
       {selected.length > 0 && (
-        <div className="mx-4 mt-4 bg-white dark:bg-gray-900 rounded-xl p-4">
+        <div className="mx-4 mt-4 bg-white dark:bg-[#1c1c1e] rounded-xl p-4">
           <div className="flex items-center justify-between mb-3">
             <span className="font-semibold text-sm">Nährwerte (live)</span>
             <div className="flex items-center gap-1 text-sm text-gray-500">
@@ -162,12 +162,12 @@ export function MealBuilder({ ingredients, initialEntries = [], initialMealType 
           <MacroRing proteinG={totalProtein} carbsG={totalCarbs} fatG={totalFat} size={100} />
 
           {/* Portions */}
-          <div className="flex items-center gap-3 mt-3 pt-3 border-t border-gray-100 dark:border-gray-800">
+          <div className="flex items-center gap-3 mt-3 pt-3 border-t border-gray-100 dark:border-[#38383a]">
             <span className="text-sm text-gray-500">Portionen</span>
             <div className="flex items-center gap-2 ml-auto">
-              <button onClick={() => setPortionCount(p => Math.max(1, p - 1))} className="w-7 h-7 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center font-bold">−</button>
+              <button onClick={() => setPortionCount(p => Math.max(1, p - 1))} className="w-7 h-7 rounded-full bg-gray-100 dark:bg-[#2c2c2e] flex items-center justify-center font-bold">−</button>
               <span className="w-6 text-center font-semibold">{portionCount}</span>
-              <button onClick={() => setPortionCount(p => Math.min(6, p + 1))} className="w-7 h-7 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center font-bold">+</button>
+              <button onClick={() => setPortionCount(p => Math.min(6, p + 1))} className="w-7 h-7 rounded-full bg-gray-100 dark:bg-[#2c2c2e] flex items-center justify-center font-bold">+</button>
             </div>
           </div>
         </div>
@@ -185,7 +185,7 @@ export function MealBuilder({ ingredients, initialEntries = [], initialMealType 
             </button>
             <button
               onClick={cycleStyle}
-              className="bg-gray-100 dark:bg-gray-800 rounded-xl px-4 py-3 font-semibold text-sm flex items-center gap-1"
+              className="bg-gray-100 dark:bg-[#2c2c2e] rounded-xl px-4 py-3 font-semibold text-sm flex items-center gap-1"
               title={`Stil: ${style}`}
             >
               <RotateCcw size={16} /> {style}
@@ -193,7 +193,7 @@ export function MealBuilder({ ingredients, initialEntries = [], initialMealType 
           </div>
           <button
             onClick={() => setShowTemplateSave(true)}
-            className="w-full bg-gray-100 dark:bg-gray-800 rounded-xl py-3 font-medium text-sm flex items-center justify-center gap-2 text-gray-600 dark:text-gray-300"
+            className="w-full bg-gray-100 dark:bg-[#2c2c2e] rounded-xl py-3 font-medium text-sm flex items-center justify-center gap-2 text-gray-600 dark:text-[#c7c7cc]"
           >
             <BookmarkPlus size={15} /> Als Vorlage speichern
           </button>
@@ -203,10 +203,10 @@ export function MealBuilder({ ingredients, initialEntries = [], initialMealType 
       {/* Template save modal */}
       {showTemplateSave && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-end" onClick={() => setShowTemplateSave(false)}>
-          <div className="bg-white dark:bg-gray-900 w-full rounded-t-3xl p-6" onClick={e => e.stopPropagation()}>
+          <div className="bg-white dark:bg-[#1c1c1e] w-full rounded-t-3xl p-6" onClick={e => e.stopPropagation()}>
             <h3 className="font-bold text-lg mb-4">Vorlage speichern</h3>
             <input
-              className="w-full border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-sm bg-transparent mb-4"
+              className="w-full border border-gray-200 dark:border-[#48484a] rounded-xl px-4 py-3 text-sm bg-transparent mb-4"
               placeholder="Name der Vorlage (optional)"
               value={templateTitle}
               onChange={e => setTemplateTitle(e.target.value)}
@@ -231,7 +231,7 @@ export function MealBuilder({ ingredients, initialEntries = [], initialMealType 
 
       {/* Recipe modal */}
       {showRecipe && recipe && (
-        <div className="fixed inset-0 bg-white dark:bg-gray-950 z-50 overflow-y-auto">
+        <div className="fixed inset-0 bg-white dark:bg-[#000000] z-50 overflow-y-auto">
           <div className="p-4">
             <div className="flex items-center justify-between mb-4">
               <button onClick={() => setShowRecipe(false)} className="text-gray-400 font-medium text-sm">← Zurück</button>

@@ -63,7 +63,7 @@ export function RecipeImport({ ingredients, onConfirm, onClose }: Props) {
   const unmatched = entries?.filter(e => !e.matched) ?? []
 
   return (
-    <div className="fixed inset-0 bg-white dark:bg-gray-950 z-50 overflow-y-auto">
+    <div className="fixed inset-0 bg-white dark:bg-[#000000] z-50 overflow-y-auto">
       <div className="p-4">
         <div className="flex items-center justify-between mb-4">
           <button onClick={onClose} className="text-gray-400 font-medium text-sm">← Zurück</button>
@@ -74,7 +74,7 @@ export function RecipeImport({ ingredients, onConfirm, onClose }: Props) {
         {!entries ? (
           <>
             <textarea
-              className="w-full border border-gray-200 dark:border-gray-700 rounded-2xl px-4 py-3 text-sm bg-transparent resize-none mb-3 min-h-40"
+              className="w-full border border-gray-200 dark:border-[#48484a] rounded-2xl px-4 py-3 text-sm bg-transparent resize-none mb-3 min-h-40"
               placeholder={"z.B.\n200g Hähnchenbrust\n80g Quinoa\n150g Brokkoli\n10ml Olivenöl"}
               value={text}
               onChange={e => setText(e.target.value)}
@@ -92,9 +92,9 @@ export function RecipeImport({ ingredients, onConfirm, onClose }: Props) {
             {matched.length > 0 && (
               <div className="mb-4">
                 <h3 className="text-sm font-semibold text-orange-500 mb-2">Erkannt ({matched.length})</h3>
-                <div className="bg-white dark:bg-gray-900 rounded-xl overflow-hidden">
+                <div className="bg-white dark:bg-[#1c1c1e] rounded-xl overflow-hidden">
                   {matched.map((e, i) => (
-                    <div key={i} className={`flex items-center justify-between px-4 py-2.5 text-sm ${i < matched.length - 1 ? 'border-b border-gray-100 dark:border-gray-800' : ''}`}>
+                    <div key={i} className={`flex items-center justify-between px-4 py-2.5 text-sm ${i < matched.length - 1 ? 'border-b border-gray-100 dark:border-[#38383a]' : ''}`}>
                       <span className="font-medium">{e.name}</span>
                       <span className="text-gray-400">{Math.round(e.amountGrams)} g</span>
                     </div>
@@ -120,7 +120,7 @@ export function RecipeImport({ ingredients, onConfirm, onClose }: Props) {
             )}
 
             <div className="flex gap-2 mt-2">
-              <button onClick={() => setEntries(null)} className="flex-1 bg-gray-100 dark:bg-gray-800 rounded-xl py-3 text-sm font-medium">
+              <button onClick={() => setEntries(null)} className="flex-1 bg-gray-100 dark:bg-[#2c2c2e] rounded-xl py-3 text-sm font-medium">
                 Nochmal
               </button>
               {matched.length > 0 && (
