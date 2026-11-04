@@ -24,13 +24,13 @@ export function ShoppingPage({ items, ingredients, onToggle, onRemove, onClear }
       </div>
 
       {items.length === 0 ? (
-        <div className="bg-white dark:bg-gray-900 rounded-2xl p-8 text-center text-sm text-gray-400 shadow-sm">
+        <div className="bg-white dark:bg-gray-900 rounded-xl p-8 text-center text-sm text-gray-400">
           Noch keine Artikel.<br />Füge Zutaten aus einem Meal hinzu.
         </div>
       ) : (
         <div className="space-y-3">
           {unchecked.length > 0 && (
-            <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-sm overflow-hidden">
+            <div className="bg-white dark:bg-gray-900 rounded-xl overflow-hidden">
               {unchecked.map((item, i) => {
                 const ing = ingMap.get(item.ingredientId)
                 return (
@@ -53,7 +53,7 @@ export function ShoppingPage({ items, ingredients, onToggle, onRemove, onClear }
           )}
 
           {checked.length > 0 && (
-            <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-sm overflow-hidden opacity-50">
+            <div className="bg-white dark:bg-gray-900 rounded-xl overflow-hidden opacity-50">
               {checked.map((item, i) => {
                 const ing = ingMap.get(item.ingredientId)
                 return (

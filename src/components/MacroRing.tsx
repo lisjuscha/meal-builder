@@ -15,9 +15,9 @@ export function MacroRing({ proteinG, carbsG, fatG, size = 120 }: Props) {
   const circumference = 2 * Math.PI * r
 
   const segments = [
-    { value: proteinG, color: '#34d399', label: 'Protein' },
-    { value: carbsG,   color: '#60a5fa', label: 'Kohlenhydrate' },
-    { value: fatG,     color: '#fbbf24', label: 'Fett' },
+    { value: proteinG, color: '#ef4444', label: 'Protein' },
+    { value: carbsG,   color: '#3b82f6', label: 'Kohlenhydrate' },
+    { value: fatG,     color: '#92400e', label: 'Fett' },
   ]
 
   let offset = 0

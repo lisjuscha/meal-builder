@@ -65,7 +65,7 @@ export function MealDetailModal({ meal, ingredients, onClose, onDelete, onUpdate
 
             <button
               onClick={() => setCooking(true)}
-              className="w-full bg-green-500 text-white rounded-2xl py-3 font-semibold flex items-center justify-center gap-2 mb-4"
+              className="w-full bg-orange-500 text-white rounded-xl py-3 font-semibold flex items-center justify-center gap-2 mb-4"
             >
               <Play size={16} /> Kochsession starten
             </button>
@@ -74,7 +74,7 @@ export function MealDetailModal({ meal, ingredients, onClose, onDelete, onUpdate
             <ol className="space-y-2 mb-6">
               {recipe.steps.map((step, i) => (
                 <li key={step.id} className="flex gap-3 text-sm">
-                  <span className="w-5 h-5 rounded-full bg-green-100 dark:bg-green-900 text-green-700 flex items-center justify-center text-xs font-bold shrink-0">{i + 1}</span>
+                  <span className="w-5 h-5 rounded-full bg-orange-500 text-white flex items-center justify-center text-xs font-bold shrink-0">{i + 1}</span>
                   <span className="pt-0.5">{step.text}</span>
                 </li>
               ))}
@@ -117,15 +117,15 @@ export function MealDetailModal({ meal, ingredients, onClose, onDelete, onUpdate
           value={note}
           onChange={e => setNote(e.target.value)}
         />
-        <button onClick={save} className="w-full bg-gray-900 dark:bg-white dark:text-gray-900 text-white rounded-2xl py-3 font-semibold mb-3">
+        <button onClick={save} className="w-full bg-gray-900 dark:bg-white dark:text-gray-900 text-white rounded-xl py-3 font-semibold mb-3">
           Speichern
         </button>
 
         <div className="flex gap-2">
-          <button onClick={() => onAddToShopping(meal)} className="flex-1 bg-gray-100 dark:bg-gray-800 rounded-2xl py-3 text-sm font-medium flex items-center justify-center gap-2">
+          <button onClick={() => onAddToShopping(meal)} className="flex-1 bg-gray-100 dark:bg-gray-800 rounded-xl py-3 text-sm font-medium flex items-center justify-center gap-2">
             <ShoppingCart size={15} /> Einkaufsliste
           </button>
-          <button onClick={onReuse} className="flex-1 bg-gray-100 dark:bg-gray-800 rounded-2xl py-3 text-sm font-medium flex items-center justify-center gap-2">
+          <button onClick={onReuse} className="flex-1 bg-gray-100 dark:bg-gray-800 rounded-xl py-3 text-sm font-medium flex items-center justify-center gap-2">
             <RotateCcw size={15} /> Wiederholen
           </button>
         </div>

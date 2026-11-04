@@ -82,7 +82,7 @@ export function RecipeImport({ ingredients, onConfirm, onClose }: Props) {
             <button
               onClick={analyze}
               disabled={!text.trim()}
-              className="w-full bg-green-500 disabled:opacity-40 text-white rounded-2xl py-3 font-semibold"
+              className="w-full bg-orange-500 disabled:opacity-40 text-white rounded-xl py-3 font-semibold"
             >
               Zutaten erkennen
             </button>
@@ -91,8 +91,8 @@ export function RecipeImport({ ingredients, onConfirm, onClose }: Props) {
           <>
             {matched.length > 0 && (
               <div className="mb-4">
-                <h3 className="text-sm font-semibold text-green-600 mb-2">Erkannt ({matched.length})</h3>
-                <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-sm overflow-hidden">
+                <h3 className="text-sm font-semibold text-orange-500 mb-2">Erkannt ({matched.length})</h3>
+                <div className="bg-white dark:bg-gray-900 rounded-xl overflow-hidden">
                   {matched.map((e, i) => (
                     <div key={i} className={`flex items-center justify-between px-4 py-2.5 text-sm ${i < matched.length - 1 ? 'border-b border-gray-100 dark:border-gray-800' : ''}`}>
                       <span className="font-medium">{e.name}</span>
@@ -120,13 +120,13 @@ export function RecipeImport({ ingredients, onConfirm, onClose }: Props) {
             )}
 
             <div className="flex gap-2 mt-2">
-              <button onClick={() => setEntries(null)} className="flex-1 bg-gray-100 dark:bg-gray-800 rounded-2xl py-3 text-sm font-medium">
+              <button onClick={() => setEntries(null)} className="flex-1 bg-gray-100 dark:bg-gray-800 rounded-xl py-3 text-sm font-medium">
                 Nochmal
               </button>
               {matched.length > 0 && (
                 <button
                   onClick={() => onConfirm(matched.map(e => ({ ingredientId: e.ingredientId, amountGrams: e.amountGrams })))}
-                  className="flex-1 bg-green-500 text-white rounded-2xl py-3 font-semibold"
+                  className="flex-1 bg-orange-500 text-white rounded-xl py-3 font-semibold"
                 >
                   Builder öffnen →
                 </button>

@@ -46,20 +46,20 @@ export function TrendsPage({ meals }: Props) {
       <div className="flex gap-2">
         {(Object.keys(METRIC_LABELS) as Metric[]).map(m => (
           <button key={m} onClick={() => setMetric(m)}
-            className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${metric === m ? 'bg-green-500 text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-500'}`}>
+            className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${metric === m ? 'bg-orange-500 text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-500'}`}>
             {METRIC_LABELS[m]}
           </button>
         ))}
       </div>
 
       {/* Bar chart */}
-      <div className="bg-white dark:bg-gray-900 rounded-2xl p-4 shadow-sm">
+      <div className="bg-white dark:bg-gray-900 rounded-xl p-4">
         <div className="flex items-end gap-2 h-32">
           {days.map(day => (
             <div key={day.date} className="flex-1 flex flex-col items-center gap-1">
               <div className="w-full flex items-end justify-center" style={{ height: '100px' }}>
                 <div
-                  className="w-full max-w-8 bg-green-400 rounded-t-md transition-all"
+                  className="w-full max-w-8 bg-orange-400 rounded-t-md transition-all"
                   style={{ height: `${(day.value / maxVal) * 100}%`, minHeight: day.value > 0 ? '4px' : '0' }}
                 />
               </div>
@@ -71,23 +71,23 @@ export function TrendsPage({ meals }: Props) {
 
       {/* Stat cards */}
       <div className="grid grid-cols-3 gap-3">
-        <div className="bg-white dark:bg-gray-900 rounded-2xl p-3 shadow-sm text-center">
-          <div className="text-xl font-bold">{totalMeals}</div>
+        <div className="bg-white dark:bg-gray-900 rounded-xl p-3 text-center">
+          <div className="text-xl font-bold text-red-500">{totalMeals}</div>
           <div className="text-xs text-gray-400 mt-0.5">Meals</div>
         </div>
-        <div className="bg-white dark:bg-gray-900 rounded-2xl p-3 shadow-sm text-center">
-          <div className="text-xl font-bold">{Math.round(avgKcal)}</div>
+        <div className="bg-white dark:bg-gray-900 rounded-xl p-3 text-center">
+          <div className="text-xl font-bold text-orange-500">{Math.round(avgKcal)}</div>
           <div className="text-xs text-gray-400 mt-0.5">Ø kcal/Tag</div>
         </div>
-        <div className="bg-white dark:bg-gray-900 rounded-2xl p-3 shadow-sm text-center">
-          <div className="text-xl font-bold">{coveredCategories}</div>
+        <div className="bg-white dark:bg-gray-900 rounded-xl p-3 text-center">
+          <div className="text-xl font-bold text-green-500">{coveredCategories}</div>
           <div className="text-xs text-gray-400 mt-0.5">Kategorien</div>
         </div>
       </div>
 
       {/* Best meal */}
       {bestMeal && (
-        <div className="bg-white dark:bg-gray-900 rounded-2xl p-4 shadow-sm">
+        <div className="bg-white dark:bg-gray-900 rounded-xl p-4">
           <div className="text-xs text-gray-400 mb-1">Bestes Meal der Woche</div>
           <div className="font-semibold">{bestMeal.generatedRecipe?.title ?? 'Meal'}</div>
           <div className="flex items-center gap-1 text-yellow-400 text-sm mt-1">

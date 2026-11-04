@@ -73,7 +73,7 @@ export function MealBuilder({ ingredients, initialEntries = [], initialMealType 
           {MEAL_TYPES.map(t => (
             <button key={t} onClick={() => setMealType(t)}
               className={`shrink-0 px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
-                mealType === t ? 'bg-green-500 text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300'
+                mealType === t ? 'bg-orange-500 text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300'
               }`}>
               {t}
             </button>
@@ -88,7 +88,7 @@ export function MealBuilder({ ingredients, initialEntries = [], initialMealType 
           const isOpen = openCat === cat
           const selectedInCat = selected.filter(e => e.ingredient.category === cat).length
           return (
-            <div key={cat} className="bg-white dark:bg-gray-900 rounded-2xl overflow-hidden shadow-sm">
+            <div key={cat} className="bg-white dark:bg-gray-900 rounded-xl overflow-hidden">
               <button
                 onClick={() => setOpenCat(isOpen ? null : cat)}
                 className="w-full flex items-center justify-between px-4 py-3"
@@ -96,7 +96,7 @@ export function MealBuilder({ ingredients, initialEntries = [], initialMealType 
                 <span className="font-semibold text-sm">
                   {cat}
                   {selectedInCat > 0 && (
-                    <span className="ml-2 text-xs bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300 px-2 py-0.5 rounded-full">
+                    <span className="ml-2 text-xs bg-orange-100 text-orange-700 dark:bg-orange-900 dark:text-orange-300 px-2 py-0.5 rounded-full">
                       {selectedInCat}
                     </span>
                   )}
@@ -111,12 +111,12 @@ export function MealBuilder({ ingredients, initialEntries = [], initialMealType 
                     const tags = getHealthTags(ing)
                     const seasonal = isInSeason(ing.name)
                     return (
-                      <div key={ing.id} className={`px-4 py-2.5 border-b border-gray-50 dark:border-gray-800 last:border-b-0 ${isSelected ? 'bg-green-50 dark:bg-green-950' : ''}`}>
+                      <div key={ing.id} className={`px-4 py-2.5 border-b border-gray-50 dark:border-gray-800 last:border-b-0 ${isSelected ? 'bg-orange-50 dark:bg-orange-950' : ''}`}>
                         <div className="flex items-center gap-3">
                           <button
                             onClick={() => toggleIngredient(ing)}
                             className={`w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors ${
-                              isSelected ? 'bg-green-500 border-green-500' : 'border-gray-300 dark:border-gray-600'
+                              isSelected ? 'bg-orange-500 border-orange-500' : 'border-gray-300 dark:border-gray-600'
                             }`}
                           >
                             {isSelected && <Check size={12} className="text-white" />}
@@ -151,7 +151,7 @@ export function MealBuilder({ ingredients, initialEntries = [], initialMealType 
 
       {/* Live macros */}
       {selected.length > 0 && (
-        <div className="mx-4 mt-4 bg-white dark:bg-gray-900 rounded-2xl p-4 shadow-sm">
+        <div className="mx-4 mt-4 bg-white dark:bg-gray-900 rounded-xl p-4">
           <div className="flex items-center justify-between mb-3">
             <span className="font-semibold text-sm">Nährwerte (live)</span>
             <div className="flex items-center gap-1 text-sm text-gray-500">
@@ -179,13 +179,13 @@ export function MealBuilder({ ingredients, initialEntries = [], initialMealType 
           <div className="flex gap-2">
             <button
               onClick={() => setShowRecipe(true)}
-              className="flex-1 bg-green-500 text-white rounded-2xl py-3 font-semibold flex items-center justify-center gap-2"
+              className="flex-1 bg-orange-500 text-white rounded-xl py-3 font-semibold flex items-center justify-center gap-2"
             >
               <Star size={16} /> Rezept generieren
             </button>
             <button
               onClick={cycleStyle}
-              className="bg-gray-100 dark:bg-gray-800 rounded-2xl px-4 py-3 font-semibold text-sm flex items-center gap-1"
+              className="bg-gray-100 dark:bg-gray-800 rounded-xl px-4 py-3 font-semibold text-sm flex items-center gap-1"
               title={`Stil: ${style}`}
             >
               <RotateCcw size={16} /> {style}
@@ -193,7 +193,7 @@ export function MealBuilder({ ingredients, initialEntries = [], initialMealType 
           </div>
           <button
             onClick={() => setShowTemplateSave(true)}
-            className="w-full bg-gray-100 dark:bg-gray-800 rounded-2xl py-3 font-medium text-sm flex items-center justify-center gap-2 text-gray-600 dark:text-gray-300"
+            className="w-full bg-gray-100 dark:bg-gray-800 rounded-xl py-3 font-medium text-sm flex items-center justify-center gap-2 text-gray-600 dark:text-gray-300"
           >
             <BookmarkPlus size={15} /> Als Vorlage speichern
           </button>
@@ -221,7 +221,7 @@ export function MealBuilder({ ingredients, initialEntries = [], initialMealType 
                 setShowTemplateSave(false)
                 setTemplateTitle('')
               }}
-              className="w-full bg-green-500 text-white rounded-2xl py-3 font-semibold"
+              className="w-full bg-orange-500 text-white rounded-xl py-3 font-semibold"
             >
               Speichern
             </button>
@@ -246,7 +246,7 @@ export function MealBuilder({ ingredients, initialEntries = [], initialMealType 
             <ol className="space-y-3 mb-6">
               {recipe.steps.map((step, i) => (
                 <li key={step.id} className="flex gap-3 text-sm">
-                  <span className="w-6 h-6 rounded-full bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 flex items-center justify-center text-xs font-bold shrink-0">{i + 1}</span>
+                  <span className="w-6 h-6 rounded-full bg-orange-500 text-white flex items-center justify-center text-xs font-bold shrink-0">{i + 1}</span>
                   <span className="pt-0.5">{step.text}</span>
                 </li>
               ))}
@@ -256,7 +256,7 @@ export function MealBuilder({ ingredients, initialEntries = [], initialMealType 
                 onSave(selected, mealType, portionCount, style)
                 setShowRecipe(false)
               }}
-              className="w-full bg-green-500 text-white rounded-2xl py-3 font-bold text-base"
+              className="w-full bg-orange-500 text-white rounded-xl py-3 font-bold text-base"
             >
               Meal speichern
             </button>

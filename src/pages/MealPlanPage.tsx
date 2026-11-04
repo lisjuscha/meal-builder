@@ -55,7 +55,7 @@ export function MealPlanPage({ plannedMeals, meals, onAdd, onRemove, onOpenBuild
 
       <div className="space-y-3">
         {days.map(day => (
-          <div key={day.date} className="bg-white dark:bg-gray-900 rounded-2xl shadow-sm overflow-hidden">
+          <div key={day.date} className="bg-white dark:bg-gray-900 rounded-xl overflow-hidden">
             <div className="px-4 py-2.5 border-b border-gray-100 dark:border-gray-800">
               <span className="font-semibold text-sm">{day.label}</span>
             </div>

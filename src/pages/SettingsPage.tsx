@@ -86,7 +86,7 @@ export function SettingsPage({ dailyKcalGoal, onGoalChange, cycleEnabled, cycleP
       <h1 className="text-xl font-bold">Einstellungen</h1>
 
       {/* Kcal goal */}
-      <div className="bg-white dark:bg-gray-900 rounded-2xl p-4 shadow-sm">
+      <div className="bg-white dark:bg-gray-900 rounded-xl p-4">
         <h2 className="font-semibold mb-3">Tägliches Kalorienziel</h2>
         <div className="flex gap-2">
           <input
@@ -96,19 +96,19 @@ export function SettingsPage({ dailyKcalGoal, onGoalChange, cycleEnabled, cycleP
             className="flex-1 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm bg-transparent"
             placeholder="2000"
           />
-          <button onClick={saveGoal} className="bg-green-500 text-white rounded-xl px-4 py-2.5 text-sm font-medium">
+          <button onClick={saveGoal} className="bg-orange-500 text-white rounded-xl px-4 py-2.5 text-sm font-medium">
             Speichern
           </button>
         </div>
       </div>
 
       {/* Cycle */}
-      <div className="bg-white dark:bg-gray-900 rounded-2xl p-4 shadow-sm">
+      <div className="bg-white dark:bg-gray-900 rounded-xl p-4">
         <div className="flex items-center justify-between mb-3">
           <h2 className="font-semibold">Zyklusbasierte Empfehlungen</h2>
           <button
             onClick={() => onCycleToggle(!cycleEnabled)}
-            className={`w-12 h-6 rounded-full transition-colors ${cycleEnabled ? 'bg-green-500' : 'bg-gray-200 dark:bg-gray-700'}`}
+            className={`w-12 h-6 rounded-full transition-colors ${cycleEnabled ? 'bg-orange-500' : 'bg-gray-200 dark:bg-gray-700'}`}
           >
             <div className={`w-5 h-5 bg-white rounded-full shadow transition-transform mx-0.5 ${cycleEnabled ? 'translate-x-6' : ''}`} />
           </button>
@@ -119,7 +119,7 @@ export function SettingsPage({ dailyKcalGoal, onGoalChange, cycleEnabled, cycleP
             <div className="flex gap-2 flex-wrap">
               {PHASES.map(p => (
                 <button key={p} onClick={() => onCyclePhaseChange(p)}
-                  className={`px-3 py-1.5 rounded-full text-xs font-medium ${cyclePhase === p ? 'bg-green-500 text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-500'}`}>
+                  className={`px-3 py-1.5 rounded-full text-xs font-medium ${cyclePhase === p ? 'bg-orange-500 text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-500'}`}>
                   {p}
                 </button>
               ))}
@@ -129,10 +129,10 @@ export function SettingsPage({ dailyKcalGoal, onGoalChange, cycleEnabled, cycleP
       </div>
 
       {/* Ingredient management */}
-      <div className="bg-white dark:bg-gray-900 rounded-2xl p-4 shadow-sm">
+      <div className="bg-white dark:bg-gray-900 rounded-xl p-4">
         <div className="flex items-center justify-between mb-3">
           <h2 className="font-semibold">Zutaten ({ingredients.length})</h2>
-          <button onClick={() => setShowAddIngredient(!showAddIngredient)} className="text-green-500 text-sm font-medium">
+          <button onClick={() => setShowAddIngredient(!showAddIngredient)} className="text-orange-500 text-sm font-medium">
             + Hinzufügen
           </button>
         </div>
@@ -149,7 +149,7 @@ export function SettingsPage({ dailyKcalGoal, onGoalChange, cycleEnabled, cycleP
               <input className="border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-900" placeholder="Fett/100g" type="number" value={newIng.fatPer100g} onChange={e => setNewIng(p => ({ ...p, fatPer100g: e.target.value }))} />
               <input className="border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-900" placeholder="Kohlenhydrate/100g" type="number" value={newIng.carbsPer100g} onChange={e => setNewIng(p => ({ ...p, carbsPer100g: e.target.value }))} />
             </div>
-            <button onClick={addIngredient} className="w-full bg-green-500 text-white rounded-lg py-2 text-sm font-medium">Zutat speichern</button>
+            <button onClick={addIngredient} className="w-full bg-orange-500 text-white rounded-lg py-2 text-sm font-medium">Zutat speichern</button>
           </div>
         )}
 
@@ -168,13 +168,13 @@ export function SettingsPage({ dailyKcalGoal, onGoalChange, cycleEnabled, cycleP
       </div>
 
       {/* Backup */}
-      <div className="bg-white dark:bg-gray-900 rounded-2xl p-4 shadow-sm">
+      <div className="bg-white dark:bg-gray-900 rounded-xl p-4">
         <h2 className="font-semibold mb-1">Datensicherung</h2>
         <p className="text-xs text-gray-400 mb-3">Alle Meals, Vorlagen und Einstellungen als JSON-Datei sichern. So gehen keine Daten verloren, wenn der Browser-Cache geleert wird.</p>
         <div className="flex gap-2">
           <button
             onClick={handleExport}
-            className="flex-1 bg-green-500 text-white rounded-xl py-2.5 text-sm font-medium"
+            className="flex-1 bg-orange-500 text-white rounded-xl py-2.5 text-sm font-medium"
           >
             Exportieren
           </button>
@@ -193,7 +193,7 @@ export function SettingsPage({ dailyKcalGoal, onGoalChange, cycleEnabled, cycleP
           onChange={handleImport}
         />
         {backupStatus && (
-          <p className="text-xs text-center mt-2 text-green-600 dark:text-green-400">{backupStatus}</p>
+          <p className="text-xs text-center mt-2 text-orange-600 dark:text-orange-400">{backupStatus}</p>
         )}
       </div>
     </div>

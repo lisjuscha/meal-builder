@@ -34,14 +34,14 @@ export function CookingSession({ recipe, onClose }: Props) {
       {/* Progress bar */}
       <div className="px-4 mb-6">
         <div className="w-full h-1 bg-gray-800 rounded-full overflow-hidden">
-          <div className="h-full bg-green-400 rounded-full transition-all" style={{ width: `${((step + 1) / total) * 100}%` }} />
+          <div className="h-full bg-orange-500 rounded-full transition-all" style={{ width: `${((step + 1) / total) * 100}%` }} />
         </div>
       </div>
 
       {/* Step */}
       <div className="flex-1 flex items-center px-6">
         <div>
-          <div className="text-5xl font-bold text-green-400 mb-6">{step + 1}</div>
+          <div className="text-5xl font-bold text-orange-500 mb-6">{step + 1}</div>
           <p className="text-xl leading-relaxed">{recipe.steps[step].text}</p>
         </div>
       </div>
@@ -58,12 +58,12 @@ export function CookingSession({ recipe, onClose }: Props) {
         {step < total - 1 ? (
           <button
             onClick={() => setStep(s => s + 1)}
-            className="flex-1 bg-green-500 rounded-2xl py-4 flex items-center justify-center"
+            className="flex-1 bg-orange-500 rounded-xl py-4 flex items-center justify-center"
           >
             <ChevronRight size={28} />
           </button>
         ) : (
-          <button onClick={onClose} className="flex-1 bg-green-500 rounded-2xl py-4 font-bold">
+          <button onClick={onClose} className="flex-1 bg-orange-500 rounded-xl py-4 font-bold">
             Fertig
           </button>
         )}
