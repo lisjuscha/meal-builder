@@ -1,6 +1,6 @@
-import { Home, ChefHat, TrendingUp, ShoppingCart, Settings } from 'lucide-react'
+import { Home, TrendingUp, ShoppingCart, Settings } from 'lucide-react'
 
-type Tab = 'home' | 'builder' | 'trends' | 'shop' | 'settings'
+type Tab = 'home' | 'trends' | 'shop' | 'settings'
 
 interface Props {
   active: Tab
@@ -9,7 +9,6 @@ interface Props {
 
 const TABS: { id: Tab; icon: typeof Home; label: string }[] = [
   { id: 'home',     icon: Home,          label: 'Heute' },
-  { id: 'builder',  icon: ChefHat,       label: 'Builder' },
   { id: 'trends',   icon: TrendingUp,    label: 'Trends' },
   { id: 'shop',     icon: ShoppingCart,  label: 'Einkauf' },
   { id: 'settings', icon: Settings,      label: 'Einstellungen' },

@@ -12,8 +12,8 @@ import { useAppData } from './hooks/useAppData'
 import type { SelectedEntry, CookingStyle, MealType, MealTemplate, Meal, ShoppingListItem } from './types'
 import { generateRecipe } from './utils/recipeGenerator'
 
-type Tab = 'home' | 'builder' | 'trends' | 'shop' | 'settings'
-type Overlay = 'fridge' | 'import' | 'plan' | null
+type Tab = 'home' | 'trends' | 'shop' | 'settings'
+type Overlay = 'fridge' | 'import' | 'plan' | 'builder' | null
 
 export default function App() {
   const [tab, setTab] = useState<Tab>('home')
@@ -65,8 +65,7 @@ export default function App() {
 
   function handleOpenBuilder(preload?: { entries: { ingredientId: string; amountGrams: number }[] }) {
     setBuilderPreload(preload ?? null)
-    setOverlay(null)
-    setTab('builder')
+    setOverlay('builder')
   }
 
   function handleAddToShopping(meal: Meal) {
@@ -113,8 +112,33 @@ export default function App() {
           meals={data.meals}
           onAdd={data.savePlannedMeal}
           onRemove={data.removePlannedMeal}
-          onOpenBuilder={() => { setOverlay(null); setTab('builder') }}
+          onOpenBuilder={() => { setOverlay('builder') }}
         />
+      )}
+      {overlay === 'builder' && (
+        <div className="fixed inset-0 z-50 flex flex-col bg-[#000000] dark:bg-[#000000]">
+          <div className="flex items-center justify-between px-4 pt-4 pb-2">
+            <h1 className="text-xl font-bold">Meal Builder</h1>
+            <button
+              onClick={() => { setOverlay(null); setBuilderPreload(null) }}
+              className="text-orange-500 font-medium text-sm"
+            >
+              Schließen
+            </button>
+          </div>
+          <div className="flex-1 overflow-y-auto">
+            <MealBuilder
+              key={JSON.stringify(builderPreload)}
+              ingredients={data.ingredients}
+              initialEntries={builderInitialEntries}
+              onSave={(entries, mealType, portionCount, style) => {
+                handleSaveMeal(entries, mealType, portionCount, style)
+                setOverlay(null)
+              }}
+              onSaveTemplate={handleSaveTemplate}
+            />
+          </div>
+        </div>
       )}
 
       <main className="pb-20">
@@ -131,18 +155,6 @@ export default function App() {
             onOpenFridge={() => setOverlay('fridge')}
             onOpenPlan={() => setOverlay('plan')}
           />
-        )}
-        {tab === 'builder' && (
-          <div className="pt-4">
-            <h1 className="text-xl font-bold px-4 mb-2">Meal Builder</h1>
-            <MealBuilder
-              key={JSON.stringify(builderPreload)}
-              ingredients={data.ingredients}
-              initialEntries={builderInitialEntries}
-              onSave={handleSaveMeal}
-              onSaveTemplate={handleSaveTemplate}
-            />
-          </div>
         )}
         {tab === 'trends' && <TrendsPage meals={data.meals} />}
         {tab === 'shop' && (
