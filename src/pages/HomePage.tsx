@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { Droplets, AlertTriangle, ChevronRight, Trash2, Refrigerator, FileText, Calendar } from 'lucide-react'
+import { Droplets, AlertTriangle, ChevronRight, Trash2, Refrigerator, Calendar } from 'lucide-react'
 import type { Meal, MealTemplate, Ingredient } from '../types'
 import { MacroRing } from '../components/MacroRing'
 import { getNutritionRating } from '../utils/recipeGenerator'
@@ -90,15 +90,12 @@ export function HomePage({ meals, templates, ingredients, onRemoveMeal, onRemove
       </div>
 
       {/* Quick actions */}
-      <div className="grid grid-cols-3 gap-2">
+      <div className="grid grid-cols-2 gap-2">
         <button onClick={() => onOpenBuilder()} className="bg-orange-500 text-white rounded-xl py-3 text-xs font-semibold flex flex-col items-center gap-1">
           <ChevronRight size={18} /> Neues Meal
         </button>
         <button onClick={onOpenFridge} className="bg-white dark:bg-[#1c1c1e] rounded-xl py-3 text-xs font-medium flex flex-col items-center gap-1 text-gray-600 dark:text-[#c7c7cc]">
           <Refrigerator size={18} /> Was hab ich?
-        </button>
-        <button onClick={onOpenImport} className="bg-white dark:bg-[#1c1c1e] rounded-xl py-3 text-xs font-medium flex flex-col items-center gap-1 text-gray-600 dark:text-[#c7c7cc]">
-          <FileText size={18} /> Importieren
         </button>
       </div>
       <button onClick={onOpenPlan} className="w-full bg-white dark:bg-[#1c1c1e] rounded-xl py-3 text-sm font-medium flex items-center justify-center gap-2 text-gray-600 dark:text-[#c7c7cc]">

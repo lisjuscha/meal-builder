@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react'
+import { FileText } from 'lucide-react'
 import type { Ingredient, IngredientCategory } from '../types'
 import { exportAllData, importAllData } from '../db'
 
@@ -14,9 +15,10 @@ interface Props {
   ingredients: Ingredient[]
   onSaveIngredient: (i: Ingredient) => void
   onRemoveIngredient: (id: string) => void
+  onOpenImport: () => void
 }
 
-export function SettingsPage({ dailyKcalGoal, onGoalChange, cycleEnabled, cyclePhase, onCycleToggle, onCyclePhaseChange, ingredients, onSaveIngredient, onRemoveIngredient }: Props) {
+export function SettingsPage({ dailyKcalGoal, onGoalChange, cycleEnabled, cyclePhase, onCycleToggle, onCyclePhaseChange, ingredients, onSaveIngredient, onRemoveIngredient, onOpenImport }: Props) {
   const [goal, setGoal] = useState(String(dailyKcalGoal))
   const [showAddIngredient, setShowAddIngredient] = useState(false)
   const [newIng, setNewIng] = useState({ name: '', category: 'Protein' as IngredientCategory, caloriesPer100g: '', proteinPer100g: '', fatPer100g: '', carbsPer100g: '' })
@@ -168,6 +170,16 @@ export function SettingsPage({ dailyKcalGoal, onGoalChange, cycleEnabled, cycleP
       </div>
 
       {/* Backup */}
+      <div className="bg-white dark:bg-[#1c1c1e] rounded-xl overflow-hidden">
+        <button
+          onClick={onOpenImport}
+          className="w-full flex items-center gap-3 px-4 py-3.5 text-left"
+        >
+          <FileText size={18} className="text-orange-500 shrink-0" />
+          <span className="text-sm font-medium">Rezept importieren</span>
+        </button>
+      </div>
+
       <div className="bg-white dark:bg-[#1c1c1e] rounded-xl p-4">
         <h2 className="font-semibold mb-1">Datensicherung</h2>
         <p className="text-xs text-gray-400 mb-3">Alle Meals, Vorlagen und Einstellungen als JSON-Datei sichern. So gehen keine Daten verloren, wenn der Browser-Cache geleert wird.</p>

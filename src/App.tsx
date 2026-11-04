@@ -166,6 +166,7 @@ export default function App() {
             ingredients={data.ingredients}
             onSaveIngredient={data.saveIngredient}
             onRemoveIngredient={data.removeIngredient}
+            onOpenImport={() => setOverlay('import')}
           />
         )}
       </main>
