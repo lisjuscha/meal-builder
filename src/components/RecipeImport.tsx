@@ -67,8 +67,8 @@ export function RecipeImport({ ingredients, onConfirm, onClose }: Props) {
   return (
     <div
       className="fixed inset-0 bg-white dark:bg-[#000000] z-50 flex flex-col"
-      onTouchStart={e => { startX.current = e.touches[0].clientX; startY.current = e.touches[0].clientY }}
-      onTouchEnd={e => { const dx = e.changedTouches[0].clientX - startX.current; if (dx > 80 && dx > Math.abs(e.changedTouches[0].clientY - startY.current)) onClose() }}
+      onTouchStart={e => { startX.current = e.touches[0].clientX < 50 ? e.touches[0].clientX : -1; startY.current = e.touches[0].clientY }}
+      onTouchEnd={e => { if (startX.current < 0) return; const dx = e.changedTouches[0].clientX - startX.current; if (dx > 80 && dx > Math.abs(e.changedTouches[0].clientY - startY.current)) onClose() }}
     >
       <div className="flex-1 overflow-y-auto p-4">
         <div className="flex items-center justify-between mb-4">

@@ -16,7 +16,7 @@ const TABS: { id: Tab; icon: typeof Home; label: string }[] = [
 
 export function BottomNav({ active, onChange }: Props) {
   return (
-    <nav className="shrink-0 bg-white dark:bg-[#1c1c1e] border-t border-gray-200 dark:border-[#38383a] flex">
+    <nav className="shrink-0 bg-white dark:bg-[#1c1c1e] border-t border-gray-200 dark:border-[#38383a] flex" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
       {TABS.map(tab => {
         const Icon = tab.icon
         const isActive = tab.id === active

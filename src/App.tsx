@@ -92,10 +92,11 @@ export default function App() {
   const swipeStartX = useRef(0)
   const swipeStartY = useRef(0)
   function onSwipeStart(e: React.TouchEvent) {
-    swipeStartX.current = e.touches[0].clientX
+    swipeStartX.current = e.touches[0].clientX < 50 ? e.touches[0].clientX : -1
     swipeStartY.current = e.touches[0].clientY
   }
   function onSwipeEnd(e: React.TouchEvent, close: () => void) {
+    if (swipeStartX.current < 0) return
     const dx = e.changedTouches[0].clientX - swipeStartX.current
     const dy = Math.abs(e.changedTouches[0].clientY - swipeStartY.current)
     if (dx > 80 && dx > dy) close()
@@ -170,6 +171,7 @@ export default function App() {
             meals={data.meals}
             templates={data.templates}
             ingredients={data.ingredients}
+            dailyKcalGoal={dailyKcalGoal}
             onRemoveMeal={data.removeMeal}
             onRemoveTemplate={data.removeTemplate}
             onOpenBuilder={handleOpenBuilder}
@@ -179,7 +181,7 @@ export default function App() {
             onOpenPlan={() => setOverlay('plan')}
           />
         )}
-        {tab === 'trends' && <TrendsPage meals={data.meals} />}
+        {tab === 'trends' && <TrendsPage meals={data.meals} ingredients={data.ingredients} />}
         {tab === 'shop' && (
           <ShoppingPage
             items={data.shoppingList}

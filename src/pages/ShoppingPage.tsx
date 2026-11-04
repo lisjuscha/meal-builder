@@ -60,7 +60,7 @@ export function ShoppingPage({ items, ingredients, onToggle, onRemove, onClear }
                   <div key={item.id} className={`flex items-center gap-3 px-4 py-3 ${i < checked.length - 1 ? 'border-b border-gray-100 dark:border-[#38383a]' : ''}`}>
                     <button
                       onClick={() => onToggle(item)}
-                      className="w-6 h-6 rounded-full border-2 border-green-400 bg-green-400 shrink-0 flex items-center justify-center"
+                      className="w-6 h-6 rounded-full border-2 border-orange-500 bg-orange-500 shrink-0 flex items-center justify-center"
                     >
                       <span className="text-white text-xs">✓</span>
                     </button>

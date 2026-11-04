@@ -1,14 +1,15 @@
 import { useMemo, useState } from 'react'
-import type { Meal } from '../types'
+import type { Meal, Ingredient } from '../types'
 
-interface Props { meals: Meal[] }
+interface Props { meals: Meal[]; ingredients: Ingredient[] }
 
 type Metric = 'kcal' | 'protein' | 'fiber'
 
 const METRIC_LABELS: Record<Metric, string> = { kcal: 'Kalorien', protein: 'Protein', fiber: 'Ballaststoffe' }
 
-export function TrendsPage({ meals }: Props) {
+export function TrendsPage({ meals, ingredients }: Props) {
   const [metric, setMetric] = useState<Metric>('kcal')
+  const ingMap = useMemo(() => new Map(ingredients.map(i => [i.id, i])), [ingredients])
 
   const days = useMemo(() => {
     const result: { date: string; label: string; value: number; meals: Meal[] }[] = []
@@ -34,9 +35,10 @@ export function TrendsPage({ meals }: Props) {
   const bestMeal = meals.filter(m => m.rating > 0).sort((a, b) => b.rating - a.rating)[0]
 
   const coveredCategories = useMemo(() => {
-    const cats = new Set(meals.flatMap(m => m.ingredientEntries.map(e => e.ingredientId.slice(0, 6))))
+    const weekMeals = meals.filter(m => days.some(d => m.createdAt.startsWith(d.date)))
+    const cats = new Set(weekMeals.flatMap(m => m.ingredientEntries.map(e => ingMap.get(e.ingredientId)?.category).filter(Boolean)))
     return cats.size
-  }, [meals])
+  }, [meals, days, ingMap])
 
   return (
     <div className="px-4 pt-4 pb-6 space-y-4">

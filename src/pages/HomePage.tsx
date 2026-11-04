@@ -12,6 +12,7 @@ interface Props {
   meals: Meal[]
   templates: MealTemplate[]
   ingredients: Ingredient[]
+  dailyKcalGoal: number
   onRemoveMeal: (id: string) => void
   onRemoveTemplate: (id: string) => void
   onOpenBuilder: (preload?: { entries: { ingredientId: string; amountGrams: number }[] }) => void
@@ -21,7 +22,7 @@ interface Props {
   onOpenPlan: () => void
 }
 
-export function HomePage({ meals, templates, ingredients, onRemoveMeal, onRemoveTemplate, onOpenBuilder, onUpdateMeal, onAddToShopping, onOpenFridge, onOpenPlan }: Props) {
+export function HomePage({ meals, templates, ingredients, dailyKcalGoal, onRemoveMeal, onRemoveTemplate, onOpenBuilder, onUpdateMeal, onAddToShopping, onOpenFridge, onOpenPlan }: Props) {
   const [waterMl, setWaterMl] = useState<number>(() => {
     const saved = localStorage.getItem('water')
     if (!saved) return 0
@@ -35,8 +36,6 @@ export function HomePage({ meals, templates, ingredients, onRemoveMeal, onRemove
     setWaterMl(next)
     localStorage.setItem('water', JSON.stringify({ date: todayKey(), ml: next }))
   }
-
-  const [dailyGoal] = useState<number>(() => Number(localStorage.getItem('dailyKcalGoal') ?? 2000))
 
   const todaysMeals = useMemo(() => meals.filter(m => m.createdAt.startsWith(todayKey())), [meals])
 
@@ -61,7 +60,7 @@ export function HomePage({ meals, templates, ingredients, onRemoveMeal, onRemove
     return null
   }, [todaysMeals, ingMap])
 
-  const progress = Math.min(totals.kcal / Math.max(dailyGoal, 1), 1)
+  const progress = Math.min(totals.kcal / Math.max(dailyKcalGoal, 1), 1)
 
   function mealTitle(m: Meal) {
     return m.generatedRecipe?.title?.trim() || new Date(m.createdAt).toLocaleTimeString('de', { hour: '2-digit', minute: '2-digit' })
@@ -73,7 +72,7 @@ export function HomePage({ meals, templates, ingredients, onRemoveMeal, onRemove
       <div className="bg-white dark:bg-[#1c1c1e] rounded-xl p-4">
         <div className="flex items-center justify-between mb-2">
           <span className="font-bold text-base">Heute</span>
-          <span className="text-sm text-gray-400">{Math.round(totals.kcal)} / {dailyGoal} kcal</span>
+          <span className="text-sm text-gray-400">{Math.round(totals.kcal)} / {dailyKcalGoal} kcal</span>
         </div>
         <div className="w-full h-2 bg-gray-100 dark:bg-[#2c2c2e] rounded-full overflow-hidden mb-3">
           <div className={`h-full rounded-full transition-all ${progress >= 1 ? 'bg-green-500' : 'bg-orange-500'}`} style={{ width: `${progress * 100}%` }} />

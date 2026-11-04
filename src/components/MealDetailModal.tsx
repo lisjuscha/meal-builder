@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { Star, Trash2, ShoppingCart, RotateCcw, Play } from 'lucide-react'
 import type { Meal, Ingredient } from '../types'
 import { MacroRing } from './MacroRing'
@@ -22,6 +22,8 @@ export function MealDetailModal({ meal, ingredients, onClose, onDelete, onUpdate
   const [rating, setRating] = useState(meal.rating)
   const [note, setNote] = useState(meal.note)
   const [cooking, setCooking] = useState(false)
+  const startX = useRef(0)
+  const startY = useRef(0)
   const ingMap = new Map(ingredients.map(i => [i.id, i]))
   const recipe = meal.generatedRecipe
   const trafficRating = recipe ? getNutritionRating(recipe, meal.mealType) : null
@@ -35,8 +37,12 @@ export function MealDetailModal({ meal, ingredients, onClose, onDelete, onUpdate
   }
 
   return (
-    <div className="fixed inset-0 bg-white dark:bg-[#000000] z-50 overflow-y-auto">
-      <div className="p-4">
+    <div
+      className="fixed inset-0 bg-white dark:bg-[#000000] z-50 flex flex-col"
+      onTouchStart={e => { if (e.touches[0].clientX < 50) { startX.current = e.touches[0].clientX; startY.current = e.touches[0].clientY } else { startX.current = -1 } }}
+      onTouchEnd={e => { const dx = e.changedTouches[0].clientX - startX.current; const dy = Math.abs(e.changedTouches[0].clientY - startY.current); if (startX.current >= 0 && dx > 80 && dx > dy) onClose() }}
+    >
+      <div className="flex-1 overflow-y-auto p-4">
         <div className="flex items-center justify-between mb-4">
           <button onClick={onClose} className="text-gray-400 font-medium text-sm">← Zurück</button>
           <button onClick={onDelete} className="text-red-400"><Trash2 size={18} /></button>
