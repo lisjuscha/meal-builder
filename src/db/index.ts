@@ -113,3 +113,53 @@ export async function clearShoppingList(): Promise<void> {
   const db = await getDB()
   await db.clear('shoppingList')
 }
+
+// Backup
+export async function exportAllData() {
+  const db = await getDB()
+  const [ingredients, meals, templates, plannedMeals, shoppingList] = await Promise.all([
+    db.getAll('ingredients'),
+    db.getAll('meals'),
+    db.getAll('templates'),
+    db.getAll('plannedMeals'),
+    db.getAll('shoppingList'),
+  ])
+  return {
+    version: 1,
+    exportedAt: new Date().toISOString(),
+    settings: {
+      dailyKcalGoal: localStorage.getItem('dailyKcalGoal'),
+      cycleEnabled: localStorage.getItem('cycleEnabled'),
+      cyclePhase: localStorage.getItem('cyclePhase'),
+    },
+    ingredients,
+    meals,
+    templates,
+    plannedMeals,
+    shoppingList,
+  }
+}
+
+export async function importAllData(raw: unknown): Promise<void> {
+  const data = raw as Awaited<ReturnType<typeof exportAllData>>
+  const db = await getDB()
+
+  const stores = ['ingredients', 'meals', 'templates', 'plannedMeals', 'shoppingList'] as const
+  const clearTx = db.transaction(stores, 'readwrite')
+  await Promise.all(stores.map(s => clearTx.objectStore(s).clear()))
+  await clearTx.done
+
+  const writeTx = db.transaction(stores, 'readwrite')
+  await Promise.all([
+    ...(data.ingredients ?? []).map((i: Ingredient) => writeTx.objectStore('ingredients').put(i)),
+    ...(data.meals ?? []).map((m: Meal) => writeTx.objectStore('meals').put(m)),
+    ...(data.templates ?? []).map((t: MealTemplate) => writeTx.objectStore('templates').put(t)),
+    ...(data.plannedMeals ?? []).map((p: PlannedMeal) => writeTx.objectStore('plannedMeals').put(p)),
+    ...(data.shoppingList ?? []).map((s: ShoppingListItem) => writeTx.objectStore('shoppingList').put(s)),
+  ])
+  await writeTx.done
+
+  if (data.settings?.dailyKcalGoal) localStorage.setItem('dailyKcalGoal', data.settings.dailyKcalGoal)
+  if (data.settings?.cycleEnabled) localStorage.setItem('cycleEnabled', data.settings.cycleEnabled)
+  if (data.settings?.cyclePhase) localStorage.setItem('cyclePhase', data.settings.cyclePhase)
+}

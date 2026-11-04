@@ -1,5 +1,6 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import type { Ingredient, IngredientCategory } from '../types'
+import { exportAllData, importAllData } from '../db'
 
 const CATEGORIES: IngredientCategory[] = ['Protein', 'Kohlenhydrate', 'Gemüse', 'Obst', 'Milchprodukt', 'Fett', 'Gewürz']
 
@@ -19,8 +20,42 @@ export function SettingsPage({ dailyKcalGoal, onGoalChange, cycleEnabled, cycleP
   const [goal, setGoal] = useState(String(dailyKcalGoal))
   const [showAddIngredient, setShowAddIngredient] = useState(false)
   const [newIng, setNewIng] = useState({ name: '', category: 'Protein' as IngredientCategory, caloriesPer100g: '', proteinPer100g: '', fatPer100g: '', carbsPer100g: '' })
+  const [backupStatus, setBackupStatus] = useState<string | null>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   const PHASES = ['Menstruation', 'Follikulär', 'Ovulation', 'Luteal']
+
+  async function handleExport() {
+    try {
+      const data = await exportAllData()
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `meal-backup-${new Date().toISOString().slice(0, 10)}.json`
+      a.click()
+      URL.revokeObjectURL(url)
+      setBackupStatus('Backup gespeichert')
+      setTimeout(() => setBackupStatus(null), 3000)
+    } catch {
+      setBackupStatus('Export fehlgeschlagen')
+    }
+  }
+
+  async function handleImport(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    try {
+      const text = await file.text()
+      const data = JSON.parse(text)
+      await importAllData(data)
+      setBackupStatus('Wiederhergestellt — App wird neu geladen…')
+      setTimeout(() => window.location.reload(), 1200)
+    } catch {
+      setBackupStatus('Import fehlgeschlagen — Datei ungültig?')
+    }
+    e.target.value = ''
+  }
 
   function saveGoal() {
     const v = Number(goal)
@@ -130,6 +165,36 @@ export function SettingsPage({ dailyKcalGoal, onGoalChange, cycleEnabled, cycleP
           ))}
           {ingredients.length > 20 && <p className="text-xs text-gray-400 pt-1">… und {ingredients.length - 20} weitere</p>}
         </div>
+      </div>
+
+      {/* Backup */}
+      <div className="bg-white dark:bg-gray-900 rounded-2xl p-4 shadow-sm">
+        <h2 className="font-semibold mb-1">Datensicherung</h2>
+        <p className="text-xs text-gray-400 mb-3">Alle Meals, Vorlagen und Einstellungen als JSON-Datei sichern. So gehen keine Daten verloren, wenn der Browser-Cache geleert wird.</p>
+        <div className="flex gap-2">
+          <button
+            onClick={handleExport}
+            className="flex-1 bg-green-500 text-white rounded-xl py-2.5 text-sm font-medium"
+          >
+            Exportieren
+          </button>
+          <button
+            onClick={() => fileInputRef.current?.click()}
+            className="flex-1 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200 rounded-xl py-2.5 text-sm font-medium"
+          >
+            Importieren
+          </button>
+        </div>
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept=".json"
+          className="hidden"
+          onChange={handleImport}
+        />
+        {backupStatus && (
+          <p className="text-xs text-center mt-2 text-green-600 dark:text-green-400">{backupStatus}</p>
+        )}
       </div>
     </div>
   )
