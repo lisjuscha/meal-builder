@@ -27,9 +27,10 @@ interface Props {
   onAdd: (p: PlannedMeal) => void
   onRemove: (id: string) => void
   onOpenBuilder: () => void
+  onClose: () => void
 }
 
-export function MealPlanPage({ plannedMeals, meals, onAdd, onRemove, onOpenBuilder }: Props) {
+export function MealPlanPage({ plannedMeals, meals, onAdd, onRemove, onOpenBuilder, onClose }: Props) {
   const [showPicker, setShowPicker] = useState<{ date: string; mealType: MealType } | null>(null)
   const days = useMemo(() => getWeekDays(), [])
   const mealMap = useMemo(() => new Map(meals.map(m => [m.id, m])), [meals])
@@ -50,8 +51,12 @@ export function MealPlanPage({ plannedMeals, meals, onAdd, onRemove, onOpenBuild
   }
 
   return (
-    <div className="px-4 pt-4 pb-6">
-      <h1 className="text-xl font-bold mb-4">Mahlzeitenplan</h1>
+    <div className="flex-1 overflow-y-auto min-h-0 px-4 pt-4 pb-6">
+      <div className="flex items-center justify-between mb-4">
+        <button onClick={onClose} className="text-gray-400 font-medium text-sm">← Zurück</button>
+        <h1 className="text-xl font-bold">Mahlzeitenplan</h1>
+        <div className="w-16" />
+      </div>
 
       <div className="space-y-3">
         {days.map(day => (
@@ -79,7 +84,7 @@ export function MealPlanPage({ plannedMeals, meals, onAdd, onRemove, onOpenBuild
                     ) : (
                       <button
                         onClick={() => setShowPicker({ date: day.date, mealType })}
-                        className="flex items-center gap-1 text-green-500 text-xs font-medium ml-auto"
+                        className="flex items-center gap-1 text-orange-500 text-xs font-medium ml-auto"
                       >
                         <Plus size={14} /> Hinzufügen
                       </button>
@@ -103,7 +108,7 @@ export function MealPlanPage({ plannedMeals, meals, onAdd, onRemove, onOpenBuild
             <div className="divide-y divide-gray-100 dark:divide-gray-800">
               <button
                 onClick={onOpenBuilder}
-                className="w-full flex items-center gap-3 px-4 py-3 text-left text-green-500 font-medium text-sm"
+                className="w-full flex items-center gap-3 px-4 py-3 text-left text-orange-500 font-medium text-sm"
               >
                 <Plus size={16} /> Neues Meal erstellen
               </button>

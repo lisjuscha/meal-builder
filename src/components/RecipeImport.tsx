@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { AlertTriangle } from 'lucide-react'
 import type { Ingredient } from '../types'
 
@@ -53,6 +53,8 @@ function extractEntries(text: string, ingredients: Ingredient[]): MatchedEntry[]
 export function RecipeImport({ ingredients, onConfirm, onClose }: Props) {
   const [text, setText] = useState('')
   const [entries, setEntries] = useState<MatchedEntry[] | null>(null)
+  const startX = useRef(0)
+  const startY = useRef(0)
 
   function analyze() {
     if (!text.trim()) return
@@ -63,7 +65,11 @@ export function RecipeImport({ ingredients, onConfirm, onClose }: Props) {
   const unmatched = entries?.filter(e => !e.matched) ?? []
 
   return (
-    <div className="fixed inset-0 bg-white dark:bg-[#000000] z-50 flex flex-col">
+    <div
+      className="fixed inset-0 bg-white dark:bg-[#000000] z-50 flex flex-col"
+      onTouchStart={e => { startX.current = e.touches[0].clientX; startY.current = e.touches[0].clientY }}
+      onTouchEnd={e => { const dx = e.changedTouches[0].clientX - startX.current; if (dx > 80 && dx > Math.abs(e.changedTouches[0].clientY - startY.current)) onClose() }}
+    >
       <div className="flex-1 overflow-y-auto p-4">
         <div className="flex items-center justify-between mb-4">
           <button onClick={onClose} className="text-gray-400 font-medium text-sm">← Zurück</button>

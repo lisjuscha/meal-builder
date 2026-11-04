@@ -1,4 +1,4 @@
-const CACHE = 'meal-builder-v9'
+const CACHE = 'meal-builder-v10'
 
 self.addEventListener('install', () => {
   self.skipWaiting()

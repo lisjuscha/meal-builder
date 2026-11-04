@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useRef } from 'react'
 import { BottomNav } from './components/BottomNav'
 import { MealBuilder } from './components/MealBuilder'
 import { FridgePicker } from './components/FridgePicker'
@@ -89,8 +89,20 @@ export default function App() {
     localStorage.setItem('cyclePhase', v)
   }
 
+  const swipeStartX = useRef(0)
+  const swipeStartY = useRef(0)
+  function onSwipeStart(e: React.TouchEvent) {
+    swipeStartX.current = e.touches[0].clientX
+    swipeStartY.current = e.touches[0].clientY
+  }
+  function onSwipeEnd(e: React.TouchEvent, close: () => void) {
+    const dx = e.changedTouches[0].clientX - swipeStartX.current
+    const dy = Math.abs(e.changedTouches[0].clientY - swipeStartY.current)
+    if (dx > 80 && dx > dy) close()
+  }
+
   return (
-    <div className="max-w-md mx-auto min-h-screen">
+    <div className="max-w-md mx-auto h-dvh flex flex-col overflow-hidden">
       {/* Overlays */}
       {overlay === 'fridge' && (
         <FridgePicker
@@ -107,16 +119,27 @@ export default function App() {
         />
       )}
       {overlay === 'plan' && (
-        <MealPlanPage
-          plannedMeals={data.plannedMeals}
-          meals={data.meals}
-          onAdd={data.savePlannedMeal}
-          onRemove={data.removePlannedMeal}
-          onOpenBuilder={() => { setOverlay('builder') }}
-        />
+        <div
+          className="fixed inset-0 z-50 flex flex-col bg-white dark:bg-[#000000]"
+          onTouchStart={onSwipeStart}
+          onTouchEnd={e => onSwipeEnd(e, () => setOverlay(null))}
+        >
+          <MealPlanPage
+            plannedMeals={data.plannedMeals}
+            meals={data.meals}
+            onAdd={data.savePlannedMeal}
+            onRemove={data.removePlannedMeal}
+            onOpenBuilder={() => { setOverlay('builder') }}
+            onClose={() => setOverlay(null)}
+          />
+        </div>
       )}
       {overlay === 'builder' && (
-        <div className="fixed inset-0 z-50 flex flex-col bg-[#000000] dark:bg-[#000000]">
+        <div
+          className="fixed inset-0 z-50 flex flex-col bg-[#000000] dark:bg-[#000000]"
+          onTouchStart={onSwipeStart}
+          onTouchEnd={e => onSwipeEnd(e, () => { setOverlay(null); setBuilderPreload(null) })}
+        >
           <div className="flex items-center justify-between px-4 pt-4 pb-2">
             <h1 className="text-xl font-bold">Meal Builder</h1>
             <button
@@ -141,7 +164,7 @@ export default function App() {
         </div>
       )}
 
-      <main className="pb-20">
+      <main className="flex-1 overflow-y-auto min-h-0">
         {tab === 'home' && (
           <HomePage
             meals={data.meals}
