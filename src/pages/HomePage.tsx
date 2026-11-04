@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { Droplets, AlertTriangle, ChevronRight, Trash2 } from 'lucide-react'
+import { Droplets, AlertTriangle, ChevronRight, Trash2, Refrigerator, FileText, Calendar } from 'lucide-react'
 import type { Meal, MealTemplate, Ingredient } from '../types'
 import { MacroRing } from '../components/MacroRing'
 import { getNutritionRating } from '../utils/recipeGenerator'
@@ -17,9 +17,12 @@ interface Props {
   onOpenBuilder: (preload?: { entries: { ingredientId: string; amountGrams: number }[] }) => void
   onUpdateMeal: (meal: Meal) => void
   onAddToShopping: (meal: Meal) => void
+  onOpenFridge: () => void
+  onOpenImport: () => void
+  onOpenPlan: () => void
 }
 
-export function HomePage({ meals, templates, ingredients, onRemoveMeal, onRemoveTemplate, onOpenBuilder, onUpdateMeal, onAddToShopping }: Props) {
+export function HomePage({ meals, templates, ingredients, onRemoveMeal, onRemoveTemplate, onOpenBuilder, onUpdateMeal, onAddToShopping, onOpenFridge, onOpenImport, onOpenPlan }: Props) {
   const [waterMl, setWaterMl] = useState<number>(() => {
     const saved = localStorage.getItem('water')
     if (!saved) return 0
@@ -86,7 +89,21 @@ export function HomePage({ meals, templates, ingredients, onRemoveMeal, onRemove
         )}
       </div>
 
-      {/* Water tracker */}
+      {/* Quick actions */}
+      <div className="grid grid-cols-3 gap-2">
+        <button onClick={() => onOpenBuilder()} className="bg-green-500 text-white rounded-2xl py-3 text-xs font-semibold flex flex-col items-center gap-1">
+          <ChevronRight size={18} /> Neues Meal
+        </button>
+        <button onClick={onOpenFridge} className="bg-white dark:bg-gray-900 rounded-2xl py-3 text-xs font-medium flex flex-col items-center gap-1 shadow-sm text-gray-600 dark:text-gray-300">
+          <Refrigerator size={18} /> Was hab ich?
+        </button>
+        <button onClick={onOpenImport} className="bg-white dark:bg-gray-900 rounded-2xl py-3 text-xs font-medium flex flex-col items-center gap-1 shadow-sm text-gray-600 dark:text-gray-300">
+          <FileText size={18} /> Importieren
+        </button>
+      </div>
+      <button onClick={onOpenPlan} className="w-full bg-white dark:bg-gray-900 rounded-2xl py-3 text-sm font-medium flex items-center justify-center gap-2 shadow-sm text-gray-600 dark:text-gray-300">
+        <Calendar size={16} /> Mahlzeitenplan
+      </button>
       <div className="bg-white dark:bg-gray-900 rounded-2xl p-4 shadow-sm">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2 text-blue-500">
