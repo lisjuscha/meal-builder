@@ -129,7 +129,6 @@ export default function App() {
             onUpdateMeal={data.saveMeal}
             onAddToShopping={handleAddToShopping}
             onOpenFridge={() => setOverlay('fridge')}
-            onOpenImport={() => setOverlay('import')}
             onOpenPlan={() => setOverlay('plan')}
           />
         )}

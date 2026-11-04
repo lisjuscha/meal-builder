@@ -18,11 +18,10 @@ interface Props {
   onUpdateMeal: (meal: Meal) => void
   onAddToShopping: (meal: Meal) => void
   onOpenFridge: () => void
-  onOpenImport: () => void
   onOpenPlan: () => void
 }
 
-export function HomePage({ meals, templates, ingredients, onRemoveMeal, onRemoveTemplate, onOpenBuilder, onUpdateMeal, onAddToShopping, onOpenFridge, onOpenImport, onOpenPlan }: Props) {
+export function HomePage({ meals, templates, ingredients, onRemoveMeal, onRemoveTemplate, onOpenBuilder, onUpdateMeal, onAddToShopping, onOpenFridge, onOpenPlan }: Props) {
   const [waterMl, setWaterMl] = useState<number>(() => {
     const saved = localStorage.getItem('water')
     if (!saved) return 0
