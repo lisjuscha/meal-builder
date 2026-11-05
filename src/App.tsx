@@ -108,7 +108,7 @@ export default function App() {
   }
 
   return (
-    <div className="max-w-md mx-auto h-dvh flex flex-col overflow-hidden" style={{ paddingTop: 'env(safe-area-inset-top)', paddingBottom: 'env(safe-area-inset-bottom)' }}>
+    <div className="max-w-md mx-auto h-dvh flex flex-col overflow-hidden" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
       {/* Overlays */}
       {overlay === 'fridge' && (
         <FridgePicker
@@ -171,7 +171,7 @@ export default function App() {
         </div>
       )}
 
-      <main className="flex-1 overflow-y-auto min-h-0">
+      <main className="flex-1 overflow-y-auto min-h-0 overscroll-contain">
         {tab === 'home' && (
           <HomePage
             meals={data.meals}
