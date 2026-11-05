@@ -1,20 +1,33 @@
-import { useState, useMemo, useRef } from 'react'
-import { Check, AlertTriangle } from 'lucide-react'
-import type { Ingredient, IngredientCategory } from '../types'
+import { useState, useMemo, useRef, useEffect } from 'react'
+import { Check } from 'lucide-react'
+import type { Ingredient, IngredientCategory, CookingStyle } from '../types'
 import { getHealthTags, isInSeason } from '../utils'
 
 const CATEGORIES: IngredientCategory[] = ['Protein', 'Kohlenhydrate', 'Gemüse', 'Obst', 'Milchprodukt', 'Fett', 'Gewürz']
+const STYLES: CookingStyle[] = ['Klassisch', 'Asiatisch', 'Mediterran']
+
+const STORAGE_KEY = 'fridgeSelection'
 
 interface Props {
   ingredients: Ingredient[]
-  onConfirm: (entries: { ingredientId: string; amountGrams: number }[]) => void
+  onConfirm: (entries: { ingredientId: string; amountGrams: number }[], style: CookingStyle) => void
   onClose: () => void
 }
 
 export function FridgePicker({ ingredients, onConfirm, onClose }: Props) {
-  const [selected, setSelected] = useState<Set<string>>(new Set())
+  const [selected, setSelected] = useState<Set<string>>(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY)
+      return saved ? new Set(JSON.parse(saved) as string[]) : new Set()
+    } catch { return new Set() }
+  })
+  const [style, setStyle] = useState<CookingStyle>('Klassisch')
   const startX = useRef(0)
   const startY = useRef(0)
+
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify([...selected]))
+  }, [selected])
 
   function toggle(id: string) {
     setSelected(prev => {
@@ -24,20 +37,16 @@ export function FridgePicker({ ingredients, onConfirm, onClose }: Props) {
     })
   }
 
+  function clearAll() {
+    setSelected(new Set())
+  }
+
   const selectedIngredients = useMemo(
     () => ingredients.filter(i => selected.has(i.id)),
     [ingredients, selected]
   )
 
-  const missing = useMemo(() => {
-    const cats = new Set(selectedIngredients.map(i => i.category))
-    const hints: string[] = []
-    if (!cats.has('Protein')) hints.push('Keine Proteinquelle — z.B. Hähnchen, Eier oder Tofu hinzufügen')
-    if (!cats.has('Kohlenhydrate')) hints.push('Keine Kohlenhydrate — z.B. Reis, Nudeln oder Quinoa hinzufügen')
-    return hints
-  }, [selectedIngredients])
-
-  function suggestAndConfirm() {
+  function confirm() {
     const pick = (cat: IngredientCategory, max: number) =>
       selectedIngredients.filter(i => i.category === cat).slice(0, max)
 
@@ -51,7 +60,7 @@ export function FridgePicker({ ingredients, onConfirm, onClose }: Props) {
       ...pick('Gewürz', 2),
     ]
 
-    onConfirm(combo.map(i => ({ ingredientId: i.id, amountGrams: i.defaultAmountGrams })))
+    onConfirm(combo.map(i => ({ ingredientId: i.id, amountGrams: i.defaultAmountGrams })), style)
   }
 
   return (
@@ -63,21 +72,32 @@ export function FridgePicker({ ingredients, onConfirm, onClose }: Props) {
       <div className="flex-1 overflow-y-auto p-4">
         <div className="flex items-center justify-between mb-4">
           <button onClick={onClose} className="text-gray-400 font-medium text-sm">← Zurück</button>
-          <span className="text-sm text-gray-400">{selected.size} ausgewählt</span>
+          <div className="flex items-center gap-3">
+            {selected.size > 0 && (
+              <button onClick={clearAll} className="text-xs text-gray-400 underline">Alles löschen</button>
+            )}
+            <span className="text-sm text-gray-400">{selected.size} ausgewählt</span>
+          </div>
         </div>
         <h2 className="text-xl font-bold mb-1">Was hab ich daheim?</h2>
-        <p className="text-sm text-gray-500 mb-4">Tippe an was du hast — die App wählt eine sinnvolle Kombination.</p>
+        <p className="text-sm text-gray-500 mb-4">Tippe an was du hast — wird für nächstes Mal gespeichert.</p>
 
-        {missing.length > 0 && selected.size > 0 && (
-          <div className="space-y-1.5 mb-4">
-            {missing.map(hint => (
-              <div key={hint} className="flex items-start gap-2 text-xs text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-950 px-3 py-2 rounded-xl">
-                <AlertTriangle size={13} className="shrink-0 mt-0.5" />
-                {hint}
-              </div>
-            ))}
-          </div>
-        )}
+        {/* Style picker */}
+        <div className="flex gap-2 mb-4">
+          {STYLES.map(s => (
+            <button
+              key={s}
+              onClick={() => setStyle(s)}
+              className={`flex-1 py-2 rounded-xl text-sm font-medium transition-colors ${
+                style === s
+                  ? 'bg-orange-500 text-white'
+                  : 'bg-gray-100 dark:bg-[#1c1c1e] text-gray-600 dark:text-[#c7c7cc]'
+              }`}
+            >
+              {s}
+            </button>
+          ))}
+        </div>
 
         <div className="space-y-2">
           {CATEGORIES.map(cat => {
@@ -85,10 +105,14 @@ export function FridgePicker({ ingredients, onConfirm, onClose }: Props) {
               .filter(i => i.category === cat)
               .sort((a, b) => (b.isFavorite ? 1 : 0) - (a.isFavorite ? 1 : 0))
             if (catIngredients.length === 0) return null
+            const selectedCount = catIngredients.filter(i => selected.has(i.id)).length
             return (
               <div key={cat} className="bg-white dark:bg-[#1c1c1e] rounded-xl overflow-hidden">
-                <div className="px-4 py-2.5 border-b border-gray-100 dark:border-[#38383a]">
+                <div className="px-4 py-2.5 border-b border-gray-100 dark:border-[#38383a] flex items-center justify-between">
                   <span className="font-semibold text-sm">{cat}</span>
+                  {selectedCount > 0 && (
+                    <span className="text-xs bg-orange-100 dark:bg-orange-900 text-orange-700 dark:text-orange-300 px-2 py-0.5 rounded-full">{selectedCount}</span>
+                  )}
                 </div>
                 <div className="flex flex-wrap gap-2 p-3">
                   {catIngredients.map(ing => {
@@ -106,6 +130,7 @@ export function FridgePicker({ ingredients, onConfirm, onClose }: Props) {
                         }`}
                       >
                         {isSelected && <Check size={12} />}
+                        {ing.isFavorite && !isSelected && <span className="text-yellow-400 text-xs">★</span>}
                         {ing.name}
                         {seasonal && ' 🍃'}
                         {tags.length > 0 && !isSelected && (
@@ -124,10 +149,10 @@ export function FridgePicker({ ingredients, onConfirm, onClose }: Props) {
       {selected.size > 0 && (
         <div className="p-4 pb-6 bg-white dark:bg-[#000000]">
           <button
-            onClick={suggestAndConfirm}
+            onClick={confirm}
             className="w-full bg-orange-500 text-white rounded-xl py-3.5 font-bold text-base"
           >
-            Meal Builder öffnen →
+            {style} · Meal Builder öffnen →
           </button>
         </div>
       )}

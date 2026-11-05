@@ -13,15 +13,16 @@ interface Props {
   ingredients: Ingredient[]
   initialEntries?: SelectedEntry[]
   initialMealType?: MealType
+  initialStyle?: CookingStyle
   onSave: (entries: SelectedEntry[], mealType: MealType, portionCount: number, style: CookingStyle) => void
   onSaveTemplate: (template: Omit<MealTemplate, 'id' | 'createdAt'>) => void
 }
 
-export function MealBuilder({ ingredients, initialEntries = [], initialMealType = 'Mittagessen', onSave, onSaveTemplate }: Props) {
+export function MealBuilder({ ingredients, initialEntries = [], initialMealType = 'Mittagessen', initialStyle, onSave, onSaveTemplate }: Props) {
   const [selected, setSelected] = useState<SelectedEntry[]>(initialEntries)
   const [mealType, setMealType] = useState<MealType>(initialMealType)
   const [portionCount, setPortionCount] = useState(1)
-  const [style, setStyle] = useState<CookingStyle>('Klassisch')
+  const [style, setStyle] = useState<CookingStyle>(initialStyle ?? 'Klassisch')
   const [openCat, setOpenCat] = useState<IngredientCategory | null>('Protein')
   const [showRecipe, setShowRecipe] = useState(false)
   const [templateTitle, setTemplateTitle] = useState('')

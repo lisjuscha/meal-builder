@@ -18,7 +18,7 @@ type Overlay = 'fridge' | 'import' | 'plan' | 'builder' | null
 export default function App() {
   const [tab, setTab] = useState<Tab>('home')
   const [overlay, setOverlay] = useState<Overlay>(null)
-  const [builderPreload, setBuilderPreload] = useState<{ entries: { ingredientId: string; amountGrams: number }[] } | null>(null)
+  const [builderPreload, setBuilderPreload] = useState<{ entries: { ingredientId: string; amountGrams: number }[]; style?: CookingStyle } | null>(null)
   const [dailyKcalGoal, setDailyKcalGoal] = useState(() => Number(localStorage.getItem('dailyKcalGoal') ?? 2000))
   const [proteinGoalG, setProteinGoalG] = useState(() => Number(localStorage.getItem('proteinGoalG') ?? 150))
   const [carbsGoalG, setCarbsGoalG] = useState(() => Number(localStorage.getItem('carbsGoalG') ?? 250))
@@ -70,7 +70,7 @@ export default function App() {
     data.saveTemplate({ ...t, id: crypto.randomUUID(), createdAt: new Date().toISOString() })
   }
 
-  function handleOpenBuilder(preload?: { entries: { ingredientId: string; amountGrams: number }[] }) {
+  function handleOpenBuilder(preload?: { entries: { ingredientId: string; amountGrams: number }[]; style?: CookingStyle }) {
     setBuilderPreload(preload ?? null)
     setOverlay('builder')
   }
@@ -113,7 +113,7 @@ export default function App() {
       {overlay === 'fridge' && (
         <FridgePicker
           ingredients={data.ingredients}
-          onConfirm={entries => handleOpenBuilder({ entries })}
+          onConfirm={(entries, style) => handleOpenBuilder({ entries, style })}
           onClose={() => setOverlay(null)}
         />
       )}
@@ -160,6 +160,7 @@ export default function App() {
               key={JSON.stringify(builderPreload)}
               ingredients={data.ingredients}
               initialEntries={builderInitialEntries}
+              initialStyle={builderPreload?.style}
               onSave={(entries, mealType, portionCount, style) => {
                 handleSaveMeal(entries, mealType, portionCount, style)
                 setOverlay(null)
