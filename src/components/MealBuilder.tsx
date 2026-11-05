@@ -26,6 +26,7 @@ export function MealBuilder({ ingredients, initialEntries = [], initialMealType 
   const [showRecipe, setShowRecipe] = useState(false)
   const [templateTitle, setTemplateTitle] = useState('')
   const [showTemplateSave, setShowTemplateSave] = useState(false)
+  const [search, setSearch] = useState('')
 
   const recipe = useMemo(() => {
     if (selected.length === 0) return null
@@ -57,8 +58,19 @@ export function MealBuilder({ ingredients, initialEntries = [], initialMealType 
     for (const ing of ingredients) {
       map.get(ing.category)?.push(ing)
     }
+    for (const [, ings] of map) {
+      ings.sort((a, b) => (b.isFavorite ? 1 : 0) - (a.isFavorite ? 1 : 0))
+    }
     return map
   }, [ingredients])
+
+  const filteredIngredients = useMemo(() => {
+    if (!search.trim()) return []
+    const q = search.toLowerCase()
+    return [...ingredients]
+      .filter(i => i.name.toLowerCase().includes(q))
+      .sort((a, b) => (b.isFavorite ? 1 : 0) - (a.isFavorite ? 1 : 0))
+  }, [ingredients, search])
 
   const totalKcal = selected.reduce((s, e) => s + e.ingredient.caloriesPer100g * e.amountGrams / 100, 0)
   const totalProtein = selected.reduce((s, e) => s + e.ingredient.proteinPer100g * e.amountGrams / 100, 0)
@@ -82,6 +94,67 @@ export function MealBuilder({ ingredients, initialEntries = [], initialMealType 
       </div>
 
       {/* Ingredient picker */}
+      <div className="px-4 pb-2">
+        <div className="relative">
+          <input
+            type="search"
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            placeholder="Zutat suchen…"
+            className="w-full border border-gray-200 dark:border-[#48484a] rounded-xl px-4 py-2.5 text-sm bg-white dark:bg-[#1c1c1e] placeholder-gray-400"
+          />
+          {search && (
+            <button onClick={() => setSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">✕</button>
+          )}
+        </div>
+      </div>
+
+      {search.trim() ? (
+        <div className="px-4">
+          {filteredIngredients.length === 0 ? (
+            <div className="text-center text-sm text-gray-400 py-8">Keine Zutaten gefunden</div>
+          ) : (
+            <div className="bg-white dark:bg-[#1c1c1e] rounded-xl overflow-hidden">
+              {filteredIngredients.map(ing => {
+                const entry = selected.find(e => e.ingredient.id === ing.id)
+                const isSelected = !!entry
+                const tags = getHealthTags(ing)
+                const seasonal = isInSeason(ing.name)
+                return (
+                  <div key={ing.id} className={`px-4 py-2.5 border-b border-gray-50 dark:border-[#38383a] last:border-b-0 ${isSelected ? 'bg-orange-50 dark:bg-orange-950' : ''}`}>
+                    <div className="flex items-center gap-3">
+                      <button
+                        onClick={() => toggleIngredient(ing)}
+                        className={`w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors ${isSelected ? 'bg-orange-500 border-orange-500' : 'border-gray-300 dark:border-[#48484a]'}`}
+                      >
+                        {isSelected && <Check size={12} className="text-white" />}
+                      </button>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-1 flex-wrap">
+                          <span className="text-sm font-medium">{ing.name}</span>
+                          {ing.isFavorite && <span className="text-yellow-400 text-xs">★</span>}
+                          {seasonal && <span className="text-sm">🍃</span>}
+                          {tags.map(tag => (
+                            <span key={tag.label} className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ${tag.color}`}>{tag.label}</span>
+                          ))}
+                        </div>
+                        <span className="text-xs text-gray-400">{ing.category} · {Math.round(ing.caloriesPer100g)} kcal/100g</span>
+                      </div>
+                      {isSelected && (
+                        <div className="flex items-center gap-1 shrink-0">
+                          <button onClick={() => updateAmount(ing.id, (entry?.amountGrams ?? 0) - 25)} className="w-7 h-7 rounded-full bg-gray-100 dark:bg-[#2c2c2e] flex items-center justify-center text-sm font-bold">−</button>
+                          <span className="w-14 text-center text-xs font-medium">{Math.round(entry?.amountGrams ?? 0)}g</span>
+                          <button onClick={() => updateAmount(ing.id, (entry?.amountGrams ?? 0) + 25)} className="w-7 h-7 rounded-full bg-gray-100 dark:bg-[#2c2c2e] flex items-center justify-center text-sm font-bold">+</button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          )}
+        </div>
+      ) : (
       <div className="px-4 space-y-2">
         {CATEGORIES.map(cat => {
           const catIngredients = byCategory.get(cat) ?? []
@@ -124,6 +197,7 @@ export function MealBuilder({ ingredients, initialEntries = [], initialMealType 
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-1 flex-wrap">
                               <span className="text-sm font-medium">{ing.name}</span>
+                              {ing.isFavorite && <span className="text-yellow-400 text-xs">★</span>}
                               {seasonal && <span className="text-sm">🍃</span>}
                               {tags.map(tag => (
                                 <span key={tag.label} className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ${tag.color}`}>{tag.label}</span>
@@ -148,6 +222,7 @@ export function MealBuilder({ ingredients, initialEntries = [], initialMealType 
           )
         })}
       </div>
+      )}
 
       {/* Live macros */}
       {selected.length > 0 && (

@@ -13,6 +13,10 @@ interface Props {
   templates: MealTemplate[]
   ingredients: Ingredient[]
   dailyKcalGoal: number
+  proteinGoalG: number
+  carbsGoalG: number
+  fatGoalG: number
+  waterGoalMl: number
   onRemoveMeal: (id: string) => void
   onRemoveTemplate: (id: string) => void
   onOpenBuilder: (preload?: { entries: { ingredientId: string; amountGrams: number }[] }) => void
@@ -22,7 +26,7 @@ interface Props {
   onOpenPlan: () => void
 }
 
-export function HomePage({ meals, templates, ingredients, dailyKcalGoal, onRemoveMeal, onRemoveTemplate, onOpenBuilder, onUpdateMeal, onAddToShopping, onOpenFridge, onOpenPlan }: Props) {
+export function HomePage({ meals, templates, ingredients, dailyKcalGoal, proteinGoalG, carbsGoalG, fatGoalG, waterGoalMl, onRemoveMeal, onRemoveTemplate, onOpenBuilder, onUpdateMeal, onAddToShopping, onOpenFridge, onOpenPlan }: Props) {
   const [waterMl, setWaterMl] = useState<number>(() => {
     const saved = localStorage.getItem('water')
     if (!saved) return 0
@@ -32,7 +36,7 @@ export function HomePage({ meals, templates, ingredients, dailyKcalGoal, onRemov
   const [selectedMeal, setSelectedMeal] = useState<Meal | null>(null)
 
   function addWater(ml: number) {
-    const next = Math.min(waterMl + ml, 5000)
+    const next = Math.min(waterMl + ml, waterGoalMl * 2)
     setWaterMl(next)
     localStorage.setItem('water', JSON.stringify({ date: todayKey(), ml: next }))
   }
@@ -80,6 +84,37 @@ export function HomePage({ meals, templates, ingredients, dailyKcalGoal, onRemov
         {totals.protein + totals.carbs + totals.fat > 0 && (
           <MacroRing proteinG={totals.protein} carbsG={totals.carbs} fatG={totals.fat} size={100} />
         )}
+        {(proteinGoalG > 0 || carbsGoalG > 0 || fatGoalG > 0) && totals.protein + totals.carbs + totals.fat > 0 && (
+          <div className="mt-3 pt-3 border-t border-gray-100 dark:border-[#38383a] space-y-1.5">
+            {proteinGoalG > 0 && (
+              <div className="flex items-center gap-2 text-xs">
+                <span className="w-14 text-gray-400 shrink-0">Protein</span>
+                <div className="flex-1 h-1.5 bg-gray-100 dark:bg-[#2c2c2e] rounded-full overflow-hidden">
+                  <div className="h-full bg-blue-400 rounded-full transition-all" style={{ width: `${Math.min(totals.protein / proteinGoalG, 1) * 100}%` }} />
+                </div>
+                <span className="w-16 text-right text-gray-400 shrink-0">{Math.round(totals.protein)}/{proteinGoalG}g</span>
+              </div>
+            )}
+            {carbsGoalG > 0 && (
+              <div className="flex items-center gap-2 text-xs">
+                <span className="w-14 text-gray-400 shrink-0">Carbs</span>
+                <div className="flex-1 h-1.5 bg-gray-100 dark:bg-[#2c2c2e] rounded-full overflow-hidden">
+                  <div className="h-full bg-yellow-400 rounded-full transition-all" style={{ width: `${Math.min(totals.carbs / carbsGoalG, 1) * 100}%` }} />
+                </div>
+                <span className="w-16 text-right text-gray-400 shrink-0">{Math.round(totals.carbs)}/{carbsGoalG}g</span>
+              </div>
+            )}
+            {fatGoalG > 0 && (
+              <div className="flex items-center gap-2 text-xs">
+                <span className="w-14 text-gray-400 shrink-0">Fett</span>
+                <div className="flex-1 h-1.5 bg-gray-100 dark:bg-[#2c2c2e] rounded-full overflow-hidden">
+                  <div className="h-full bg-red-400 rounded-full transition-all" style={{ width: `${Math.min(totals.fat / fatGoalG, 1) * 100}%` }} />
+                </div>
+                <span className="w-16 text-right text-gray-400 shrink-0">{Math.round(totals.fat)}/{fatGoalG}g</span>
+              </div>
+            )}
+          </div>
+        )}
         {balanceHint && (
           <div className="flex items-center gap-2 mt-3 text-xs text-orange-600 dark:text-orange-400">
             <AlertTriangle size={13} /> {balanceHint}
@@ -103,7 +138,7 @@ export function HomePage({ meals, templates, ingredients, dailyKcalGoal, onRemov
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2 text-blue-500">
             <Droplets size={18} />
-            <span className="font-medium text-sm">{waterMl} / 2000 ml</span>
+            <span className="font-medium text-sm">{waterMl} / {waterGoalMl} ml</span>
           </div>
           <div className="flex gap-2">
             <button onClick={() => addWater(250)} className="px-3 py-1.5 rounded-xl bg-blue-50 dark:bg-blue-950 text-blue-600 dark:text-blue-400 text-sm font-medium">+250</button>
@@ -111,7 +146,7 @@ export function HomePage({ meals, templates, ingredients, dailyKcalGoal, onRemov
           </div>
         </div>
         <div className="w-full h-1.5 bg-blue-100 dark:bg-blue-950 rounded-full mt-3 overflow-hidden">
-          <div className="h-full bg-blue-400 rounded-full" style={{ width: `${Math.min(waterMl / 2000, 1) * 100}%` }} />
+          <div className="h-full bg-blue-400 rounded-full" style={{ width: `${Math.min(waterMl / waterGoalMl, 1) * 100}%` }} />
         </div>
       </div>
 

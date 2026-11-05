@@ -81,7 +81,9 @@ export function FridgePicker({ ingredients, onConfirm, onClose }: Props) {
 
         <div className="space-y-2">
           {CATEGORIES.map(cat => {
-            const catIngredients = ingredients.filter(i => i.category === cat)
+            const catIngredients = ingredients
+              .filter(i => i.category === cat)
+              .sort((a, b) => (b.isFavorite ? 1 : 0) - (a.isFavorite ? 1 : 0))
             if (catIngredients.length === 0) return null
             return (
               <div key={cat} className="bg-white dark:bg-[#1c1c1e] rounded-xl overflow-hidden">

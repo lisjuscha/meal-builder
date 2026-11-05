@@ -131,6 +131,10 @@ export async function exportAllData() {
       dailyKcalGoal: localStorage.getItem('dailyKcalGoal'),
       cycleEnabled: localStorage.getItem('cycleEnabled'),
       cyclePhase: localStorage.getItem('cyclePhase'),
+      proteinGoalG: localStorage.getItem('proteinGoalG'),
+      carbsGoalG: localStorage.getItem('carbsGoalG'),
+      fatGoalG: localStorage.getItem('fatGoalG'),
+      waterGoalMl: localStorage.getItem('waterGoalMl'),
     },
     ingredients,
     meals,
@@ -162,4 +166,8 @@ export async function importAllData(raw: unknown): Promise<void> {
   if (data.settings?.dailyKcalGoal) localStorage.setItem('dailyKcalGoal', data.settings.dailyKcalGoal)
   if (data.settings?.cycleEnabled) localStorage.setItem('cycleEnabled', data.settings.cycleEnabled)
   if (data.settings?.cyclePhase) localStorage.setItem('cyclePhase', data.settings.cyclePhase)
+  if (data.settings?.proteinGoalG) localStorage.setItem('proteinGoalG', data.settings.proteinGoalG)
+  if (data.settings?.carbsGoalG) localStorage.setItem('carbsGoalG', data.settings.carbsGoalG)
+  if (data.settings?.fatGoalG) localStorage.setItem('fatGoalG', data.settings.fatGoalG)
+  if (data.settings?.waterGoalMl) localStorage.setItem('waterGoalMl', data.settings.waterGoalMl)
 }

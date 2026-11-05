@@ -20,6 +20,10 @@ export default function App() {
   const [overlay, setOverlay] = useState<Overlay>(null)
   const [builderPreload, setBuilderPreload] = useState<{ entries: { ingredientId: string; amountGrams: number }[] } | null>(null)
   const [dailyKcalGoal, setDailyKcalGoal] = useState(() => Number(localStorage.getItem('dailyKcalGoal') ?? 2000))
+  const [proteinGoalG, setProteinGoalG] = useState(() => Number(localStorage.getItem('proteinGoalG') ?? 150))
+  const [carbsGoalG, setCarbsGoalG] = useState(() => Number(localStorage.getItem('carbsGoalG') ?? 250))
+  const [fatGoalG, setFatGoalG] = useState(() => Number(localStorage.getItem('fatGoalG') ?? 70))
+  const [waterGoalMl, setWaterGoalMl] = useState(() => Number(localStorage.getItem('waterGoalMl') ?? 2000))
   const [cycleEnabled, setCycleEnabled] = useState(() => localStorage.getItem('cycleEnabled') === 'true')
   const [cyclePhase, setCyclePhase] = useState(() => localStorage.getItem('cyclePhase') ?? 'Follikulär')
 
@@ -172,6 +176,10 @@ export default function App() {
             templates={data.templates}
             ingredients={data.ingredients}
             dailyKcalGoal={dailyKcalGoal}
+            proteinGoalG={proteinGoalG}
+            carbsGoalG={carbsGoalG}
+            fatGoalG={fatGoalG}
+            waterGoalMl={waterGoalMl}
             onRemoveMeal={data.removeMeal}
             onRemoveTemplate={data.removeTemplate}
             onOpenBuilder={handleOpenBuilder}
@@ -195,6 +203,14 @@ export default function App() {
           <SettingsPage
             dailyKcalGoal={dailyKcalGoal}
             onGoalChange={setDailyKcalGoal}
+            proteinGoalG={proteinGoalG}
+            onProteinGoalChange={setProteinGoalG}
+            carbsGoalG={carbsGoalG}
+            onCarbsGoalChange={setCarbsGoalG}
+            fatGoalG={fatGoalG}
+            onFatGoalChange={setFatGoalG}
+            waterGoalMl={waterGoalMl}
+            onWaterGoalChange={setWaterGoalMl}
             cycleEnabled={cycleEnabled}
             cyclePhase={cyclePhase}
             onCycleToggle={handleCycleToggle}

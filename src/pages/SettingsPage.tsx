@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useRef, useState, useMemo } from 'react'
 import { FileText } from 'lucide-react'
 import type { Ingredient, IngredientCategory } from '../types'
 import { exportAllData, importAllData } from '../db'
@@ -8,6 +8,14 @@ const CATEGORIES: IngredientCategory[] = ['Protein', 'Kohlenhydrate', 'Gemüse',
 interface Props {
   dailyKcalGoal: number
   onGoalChange: (v: number) => void
+  proteinGoalG: number
+  onProteinGoalChange: (v: number) => void
+  carbsGoalG: number
+  onCarbsGoalChange: (v: number) => void
+  fatGoalG: number
+  onFatGoalChange: (v: number) => void
+  waterGoalMl: number
+  onWaterGoalChange: (v: number) => void
   cycleEnabled: boolean
   cyclePhase: string
   onCycleToggle: (v: boolean) => void
@@ -18,14 +26,23 @@ interface Props {
   onOpenImport: () => void
 }
 
-export function SettingsPage({ dailyKcalGoal, onGoalChange, cycleEnabled, cyclePhase, onCycleToggle, onCyclePhaseChange, ingredients, onSaveIngredient, onRemoveIngredient, onOpenImport }: Props) {
+export function SettingsPage({ dailyKcalGoal, onGoalChange, proteinGoalG, onProteinGoalChange, carbsGoalG, onCarbsGoalChange, fatGoalG, onFatGoalChange, waterGoalMl, onWaterGoalChange, cycleEnabled, cyclePhase, onCycleToggle, onCyclePhaseChange, ingredients, onSaveIngredient, onRemoveIngredient, onOpenImport }: Props) {
   const [goal, setGoal] = useState(String(dailyKcalGoal))
+  const [protein, setProtein] = useState(String(proteinGoalG))
+  const [carbs, setCarbs] = useState(String(carbsGoalG))
+  const [fat, setFat] = useState(String(fatGoalG))
+  const [water, setWater] = useState(String(waterGoalMl))
   const [showAddIngredient, setShowAddIngredient] = useState(false)
   const [newIng, setNewIng] = useState({ name: '', category: 'Protein' as IngredientCategory, caloriesPer100g: '', proteinPer100g: '', fatPer100g: '', carbsPer100g: '' })
   const [backupStatus, setBackupStatus] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const PHASES = ['Menstruation', 'Follikulär', 'Ovulation', 'Luteal']
+
+  const sortedIngredients = useMemo(
+    () => [...ingredients].sort((a, b) => (b.isFavorite ? 1 : 0) - (a.isFavorite ? 1 : 0)),
+    [ingredients]
+  )
 
   async function handleExport() {
     try {
@@ -62,6 +79,14 @@ export function SettingsPage({ dailyKcalGoal, onGoalChange, cycleEnabled, cycleP
   function saveGoal() {
     const v = Number(goal)
     if (v > 0) { onGoalChange(v); localStorage.setItem('dailyKcalGoal', String(v)) }
+  }
+
+  function saveMacroGoals() {
+    const p = Number(protein); const c = Number(carbs); const f = Number(fat); const w = Number(water)
+    if (p > 0) { onProteinGoalChange(p); localStorage.setItem('proteinGoalG', String(p)) }
+    if (c > 0) { onCarbsGoalChange(c); localStorage.setItem('carbsGoalG', String(c)) }
+    if (f > 0) { onFatGoalChange(f); localStorage.setItem('fatGoalG', String(f)) }
+    if (w > 0) { onWaterGoalChange(w); localStorage.setItem('waterGoalMl', String(w)) }
   }
 
   function addIngredient() {
@@ -102,6 +127,32 @@ export function SettingsPage({ dailyKcalGoal, onGoalChange, cycleEnabled, cycleP
             Speichern
           </button>
         </div>
+      </div>
+
+      {/* Makro- & Wasserziele */}
+      <div className="bg-white dark:bg-[#1c1c1e] rounded-xl p-4">
+        <h2 className="font-semibold mb-3">Makro- & Wasserziele</h2>
+        <div className="grid grid-cols-2 gap-2 mb-3">
+          <div>
+            <label className="text-xs text-gray-400 mb-1 block">Protein (g)</label>
+            <input type="number" value={protein} onChange={e => setProtein(e.target.value)} className="w-full border border-gray-200 dark:border-[#48484a] rounded-xl px-3 py-2 text-sm bg-transparent" placeholder="150" />
+          </div>
+          <div>
+            <label className="text-xs text-gray-400 mb-1 block">Kohlenhydrate (g)</label>
+            <input type="number" value={carbs} onChange={e => setCarbs(e.target.value)} className="w-full border border-gray-200 dark:border-[#48484a] rounded-xl px-3 py-2 text-sm bg-transparent" placeholder="250" />
+          </div>
+          <div>
+            <label className="text-xs text-gray-400 mb-1 block">Fett (g)</label>
+            <input type="number" value={fat} onChange={e => setFat(e.target.value)} className="w-full border border-gray-200 dark:border-[#48484a] rounded-xl px-3 py-2 text-sm bg-transparent" placeholder="70" />
+          </div>
+          <div>
+            <label className="text-xs text-gray-400 mb-1 block">Wasser (ml)</label>
+            <input type="number" value={water} onChange={e => setWater(e.target.value)} className="w-full border border-gray-200 dark:border-[#48484a] rounded-xl px-3 py-2 text-sm bg-transparent" placeholder="2000" />
+          </div>
+        </div>
+        <button onClick={saveMacroGoals} className="w-full bg-orange-500 text-white rounded-xl py-2.5 text-sm font-medium">
+          Ziele speichern
+        </button>
       </div>
 
       {/* Cycle */}
@@ -156,16 +207,20 @@ export function SettingsPage({ dailyKcalGoal, onGoalChange, cycleEnabled, cycleP
         )}
 
         <div className="max-h-64 overflow-y-auto space-y-0.5">
-          {ingredients.slice(0, 20).map(ing => (
+          {sortedIngredients.slice(0, 30).map(ing => (
             <div key={ing.id} className="flex items-center justify-between py-1.5 text-sm">
               <span>{ing.name}</span>
               <div className="flex items-center gap-2">
                 <span className="text-xs text-gray-400">{ing.category}</span>
+                <button
+                  onClick={() => onSaveIngredient({ ...ing, isFavorite: !ing.isFavorite })}
+                  className={ing.isFavorite ? 'text-yellow-400' : 'text-gray-300 dark:text-[#636366]'}
+                >★</button>
                 <button onClick={() => onRemoveIngredient(ing.id)} className="text-gray-300 dark:text-[#636366] text-xs">✕</button>
               </div>
             </div>
           ))}
-          {ingredients.length > 20 && <p className="text-xs text-gray-400 pt-1">… und {ingredients.length - 20} weitere</p>}
+          {ingredients.length > 30 && <p className="text-xs text-gray-400 pt-1">… und {ingredients.length - 30} weitere</p>}
         </div>
       </div>
 
