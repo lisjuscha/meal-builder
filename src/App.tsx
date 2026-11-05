@@ -38,6 +38,9 @@ export default function App() {
     })
   }, [builderPreload, ingMap])
 
+  const swipeStartX = useRef(0)
+  const swipeStartY = useRef(0)
+
   if (!data.ready) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -93,8 +96,6 @@ export default function App() {
     localStorage.setItem('cyclePhase', v)
   }
 
-  const swipeStartX = useRef(0)
-  const swipeStartY = useRef(0)
   function onSwipeStart(e: React.TouchEvent) {
     swipeStartX.current = e.touches[0].clientX < 50 ? e.touches[0].clientX : -1
     swipeStartY.current = e.touches[0].clientY
