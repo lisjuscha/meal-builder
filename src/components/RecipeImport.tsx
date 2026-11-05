@@ -67,6 +67,7 @@ export function RecipeImport({ ingredients, onConfirm, onClose }: Props) {
   return (
     <div
       className="fixed inset-0 bg-white dark:bg-[#000000] z-50 flex flex-col"
+      style={{ paddingTop: 'calc(var(--safe-top) + 8px)' }}
       onTouchStart={e => { startX.current = e.touches[0].clientX < 50 ? e.touches[0].clientX : -1; startY.current = e.touches[0].clientY }}
       onTouchEnd={e => { if (startX.current < 0) return; const dx = e.changedTouches[0].clientX - startX.current; if (dx > 80 && dx > Math.abs(e.changedTouches[0].clientY - startY.current)) onClose() }}
     >

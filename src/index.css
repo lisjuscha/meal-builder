@@ -1,5 +1,10 @@
 @import "tailwindcss";
 
+:root {
+  --safe-top: max(env(safe-area-inset-top), 59px);
+  --safe-bottom: max(env(safe-area-inset-bottom), 34px);
+}
+
 * {
   -webkit-tap-highlight-color: transparent;
 }

@@ -108,7 +108,7 @@ export default function App() {
   }
 
   return (
-    <div className="max-w-md mx-auto h-dvh flex flex-col overflow-hidden bg-[#f2f2f7] dark:bg-black" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
+    <div className="max-w-md mx-auto h-dvh flex flex-col overflow-hidden bg-[#f2f2f7] dark:bg-black" style={{ paddingTop: 'calc(var(--safe-top) + 8px)' }}>
       {/* Overlays */}
       {overlay === 'fridge' && (
         <FridgePicker
@@ -127,6 +127,7 @@ export default function App() {
       {overlay === 'plan' && (
         <div
           className="fixed inset-0 z-50 flex flex-col bg-white dark:bg-[#000000]"
+          style={{ paddingTop: 'calc(var(--safe-top) + 8px)' }}
           onTouchStart={onSwipeStart}
           onTouchEnd={e => onSwipeEnd(e, () => setOverlay(null))}
         >
@@ -143,6 +144,7 @@ export default function App() {
       {overlay === 'builder' && (
         <div
           className="fixed inset-0 z-50 flex flex-col bg-[#000000] dark:bg-[#000000]"
+          style={{ paddingTop: 'calc(var(--safe-top) + 8px)' }}
           onTouchStart={onSwipeStart}
           onTouchEnd={e => onSwipeEnd(e, () => { setOverlay(null); setBuilderPreload(null) })}
         >
@@ -171,7 +173,7 @@ export default function App() {
         </div>
       )}
 
-      <main className="flex-1 overflow-y-auto min-h-0 overscroll-contain">
+      <main className="flex-1 overflow-y-auto min-h-0 overscroll-contain" style={{ paddingBottom: 'calc(56px + var(--safe-bottom))' }}>
         {tab === 'home' && (
           <HomePage
             meals={data.meals}

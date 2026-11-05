@@ -66,6 +66,7 @@ export function FridgePicker({ ingredients, onConfirm, onClose }: Props) {
   return (
     <div
       className="fixed inset-0 bg-white dark:bg-[#000000] z-50 flex flex-col"
+      style={{ paddingTop: 'calc(var(--safe-top) + 8px)' }}
       onTouchStart={e => { startX.current = e.touches[0].clientX < 50 ? e.touches[0].clientX : -1; startY.current = e.touches[0].clientY }}
       onTouchEnd={e => { if (startX.current < 0) return; const dx = e.changedTouches[0].clientX - startX.current; if (dx > 80 && dx > Math.abs(e.changedTouches[0].clientY - startY.current)) onClose() }}
     >
@@ -147,7 +148,7 @@ export function FridgePicker({ ingredients, onConfirm, onClose }: Props) {
       </div>
 
       {selected.size > 0 && (
-        <div className="p-4 pb-6 bg-white dark:bg-[#000000]">
+        <div className="p-4 bg-white dark:bg-[#000000]" style={{ paddingBottom: 'var(--safe-bottom)' }}>
           <button
             onClick={confirm}
             className="w-full bg-orange-500 text-white rounded-xl py-3.5 font-bold text-base"

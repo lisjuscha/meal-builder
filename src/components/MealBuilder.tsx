@@ -308,7 +308,7 @@ export function MealBuilder({ ingredients, initialEntries = [], initialMealType 
       {/* Recipe modal */}
       {showRecipe && recipe && (
         <div className="fixed inset-0 bg-white dark:bg-[#000000] z-50 overflow-y-auto">
-          <div className="p-4">
+          <div className="px-4 pb-4" style={{ paddingTop: 'calc(var(--safe-top) + 8px)' }}>
             <div className="flex items-center justify-between mb-4">
               <button onClick={() => setShowRecipe(false)} className="text-gray-400 font-medium text-sm">← Zurück</button>
               <span className="text-xs text-gray-400 flex items-center gap-1"><Clock size={12} /> {recipe.estimatedTimeMinutes} min</span>
