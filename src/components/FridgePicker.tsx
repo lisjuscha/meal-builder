@@ -148,7 +148,7 @@ export function FridgePicker({ ingredients, onConfirm, onClose }: Props) {
       </div>
 
       {selected.size > 0 && (
-        <div className="p-4 bg-white dark:bg-[#000000]" style={{ paddingBottom: 'var(--safe-bottom)' }}>
+        <div className="p-4 bg-white dark:bg-[#000000]" style={{ paddingBottom: 'max(var(--safe-bottom), 20px)' }}>
           <button
             onClick={confirm}
             className="w-full bg-orange-500 text-white rounded-xl py-3.5 font-bold text-base"

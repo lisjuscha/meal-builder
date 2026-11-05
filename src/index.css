@@ -2,7 +2,7 @@
 
 :root {
   --safe-top: max(env(safe-area-inset-top), 59px);
-  --safe-bottom: max(env(safe-area-inset-bottom), 34px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
 }
 
 * {
