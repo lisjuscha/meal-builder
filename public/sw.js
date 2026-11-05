@@ -1,4 +1,4 @@
-const CACHE = 'meal-builder-v18'
+const CACHE = 'meal-builder-v19'
 
 self.addEventListener('install', () => {
   self.skipWaiting()
@@ -29,6 +29,12 @@ self.addEventListener('fetch', e => {
         })
         .catch(() => caches.match(e.request))
     )
+    return
+  }
+
+  // Never cache icons — iOS must always get a fresh copy when adding to home screen
+  if (url.pathname.includes('apple-touch-icon') || url.pathname.includes('icon-192') || url.pathname.includes('icon-512')) {
+    e.respondWith(fetch(e.request))
     return
   }
 
