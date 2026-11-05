@@ -108,7 +108,7 @@ export default function App() {
   }
 
   return (
-    <div className="max-w-md mx-auto h-dvh flex flex-col overflow-hidden" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
+    <div className="max-w-md mx-auto h-dvh flex flex-col overflow-hidden bg-[#f2f2f7] dark:bg-black" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
       {/* Overlays */}
       {overlay === 'fridge' && (
         <FridgePicker
