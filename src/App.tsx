@@ -195,7 +195,7 @@ export default function App() {
         </div>
       )}
 
-      <main className="flex-1 overflow-y-auto min-h-0 overscroll-contain" style={{ paddingBottom: 'calc(56px + var(--safe-bottom))' }}>
+      <main className="flex-1 overflow-y-auto min-h-0 overscroll-contain">
         {tab === 'home' && (
           <HomePage
             meals={data.meals}
