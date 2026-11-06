@@ -67,3 +67,16 @@ export function todayKey(): string {
 export function isoDate(date: Date): string {
   return date.toISOString().slice(0, 10)
 }
+
+const CYCLE_PHASE_KEYWORDS: Record<string, string[]> = {
+  Menstruation: ['spinat', 'linse', 'kürbiskern', 'brokkoli', 'beere', 'lachs', 'tofu', 'rinderhack', 'heidelbeere', 'himbeere', 'ingwer', 'rote bete', 'bohne'],
+  Follikulär: ['brokkoli', 'paprika', 'avocado', 'quinoa', 'hähnchen', 'ei', 'beere', 'spinat', 'rucola', 'feldsalat', 'chiasamen', 'leinsamen', 'lachs', 'putenbrust'],
+  Ovulation: ['avocado', 'lachs', 'spinat', 'brokkoli', 'tofu', 'beere', 'zitrone', 'kurkuma', 'tomaten', 'gurke', 'paprika', 'karotte', 'rucola', 'granatapfel'],
+  Luteal: ['süßkartoffel', 'haferflocken', 'lachs', 'mandel', 'nuss', 'chiasamen', 'avocado', 'spinat', 'banane', 'schokolade', 'linse', 'quinoa', 'kürbis', 'walnuss'],
+}
+
+export function isCycleRecommended(ingredientName: string, cyclePhase: string): boolean {
+  const keywords = CYCLE_PHASE_KEYWORDS[cyclePhase] ?? []
+  const nameLower = ingredientName.toLowerCase()
+  return keywords.some(k => nameLower.includes(k))
+}

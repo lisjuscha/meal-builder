@@ -37,6 +37,16 @@ async function seedIfEmpty(db: IDBPDatabase<MealBuilderDB>) {
     const tx = db.transaction('ingredients', 'readwrite')
     await Promise.all(seedIngredients.map(i => tx.store.put(i)))
     await tx.done
+  } else {
+    // Add any new seed ingredients that don't exist yet (so existing users get new ones)
+    const existingKeys = await db.getAllKeys('ingredients')
+    const existingSet = new Set(existingKeys)
+    const missing = seedIngredients.filter(i => !existingSet.has(i.id))
+    if (missing.length > 0) {
+      const tx = db.transaction('ingredients', 'readwrite')
+      await Promise.all(missing.map(i => tx.store.put(i)))
+      await tx.done
+    }
   }
 }
 

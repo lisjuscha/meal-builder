@@ -1,7 +1,7 @@
 import { useState, useMemo, useRef, useEffect } from 'react'
 import { Check } from 'lucide-react'
 import type { Ingredient, IngredientCategory, CookingStyle } from '../types'
-import { getHealthTags, isInSeason } from '../utils'
+import { getHealthTags, isInSeason, isCycleRecommended } from '../utils'
 
 const CATEGORIES: IngredientCategory[] = ['Protein', 'Kohlenhydrate', 'Gemüse', 'Obst', 'Milchprodukt', 'Fett', 'Gewürz']
 const STYLES: CookingStyle[] = ['Klassisch', 'Asiatisch', 'Mediterran']
@@ -10,11 +10,13 @@ const STORAGE_KEY = 'fridgeSelection'
 
 interface Props {
   ingredients: Ingredient[]
+  cycleEnabled?: boolean
+  cyclePhase?: string
   onConfirm: (entries: { ingredientId: string; amountGrams: number }[], style: CookingStyle) => void
   onClose: () => void
 }
 
-export function FridgePicker({ ingredients, onConfirm, onClose }: Props) {
+export function FridgePicker({ ingredients, cycleEnabled, cyclePhase, onConfirm, onClose }: Props) {
   const [selected, setSelected] = useState<Set<string>>(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY)
@@ -22,6 +24,7 @@ export function FridgePicker({ ingredients, onConfirm, onClose }: Props) {
     } catch { return new Set() }
   })
   const [style, setStyle] = useState<CookingStyle>('Klassisch')
+  const [search, setSearch] = useState('')
   const startX = useRef(0)
   const startY = useRef(0)
 
@@ -100,10 +103,32 @@ export function FridgePicker({ ingredients, onConfirm, onClose }: Props) {
           ))}
         </div>
 
+        {/* Search */}
+        <div className="relative mb-4">
+          <input
+            type="search"
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            placeholder="Zutat suchen…"
+            className="w-full border border-gray-200 dark:border-[#48484a] rounded-xl px-4 py-2.5 bg-white dark:bg-[#1c1c1e] placeholder-gray-400"
+          />
+          {search && (
+            <button onClick={() => setSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">✕</button>
+          )}
+        </div>
+
+        {cycleEnabled && cyclePhase && (
+          <div className="flex items-center gap-2 mb-3 px-1">
+            <span className="w-2 h-2 rounded-full bg-pink-400 inline-block shrink-0" />
+            <span className="text-xs text-gray-500">Empfohlen für <strong className="text-pink-500">{cyclePhase}</strong>-Phase</span>
+          </div>
+        )}
+
         <div className="space-y-2">
           {CATEGORIES.map(cat => {
             const catIngredients = ingredients
               .filter(i => i.category === cat)
+              .filter(i => !search.trim() || i.name.toLowerCase().includes(search.toLowerCase()))
               .sort((a, b) => (b.isFavorite ? 1 : 0) - (a.isFavorite ? 1 : 0))
             if (catIngredients.length === 0) return null
             const selectedCount = catIngredients.filter(i => selected.has(i.id)).length
@@ -120,6 +145,7 @@ export function FridgePicker({ ingredients, onConfirm, onClose }: Props) {
                     const isSelected = selected.has(ing.id)
                     const tags = getHealthTags(ing)
                     const seasonal = isInSeason(ing.name)
+                    const isCycleRec = cycleEnabled && cyclePhase ? isCycleRecommended(ing.name, cyclePhase) : false
                     return (
                       <button
                         key={ing.id}
@@ -134,7 +160,10 @@ export function FridgePicker({ ingredients, onConfirm, onClose }: Props) {
                         {ing.isFavorite && !isSelected && <span className="text-yellow-400 text-xs">★</span>}
                         {ing.name}
                         {seasonal && ' 🍃'}
-                        {tags.length > 0 && !isSelected && (
+                        {!isSelected && isCycleRec && (
+                          <span className="w-1.5 h-1.5 rounded-full bg-pink-400 inline-block" />
+                        )}
+                        {!isSelected && !isCycleRec && tags.length > 0 && (
                           <span className="w-1.5 h-1.5 rounded-full bg-purple-400 inline-block" />
                         )}
                       </button>

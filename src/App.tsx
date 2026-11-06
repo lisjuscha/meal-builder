@@ -26,6 +26,7 @@ export default function App() {
   const [waterGoalMl, setWaterGoalMl] = useState(() => Number(localStorage.getItem('waterGoalMl') ?? 2000))
   const [cycleEnabled, setCycleEnabled] = useState(() => localStorage.getItem('cycleEnabled') === 'true')
   const [cyclePhase, setCyclePhase] = useState(() => localStorage.getItem('cyclePhase') ?? 'Follikulär')
+  const [weekStartsOn, setWeekStartsOn] = useState<0 | 1>(() => localStorage.getItem('weekStartsOn') === '0' ? 0 : 1)
 
   const data = useAppData()
   const ingMap = useMemo(() => new Map(data.ingredients.map(i => [i.id, i])), [data.ingredients])
@@ -96,6 +97,11 @@ export default function App() {
     localStorage.setItem('cyclePhase', v)
   }
 
+  function handleWeekStartChange(v: 0 | 1) {
+    setWeekStartsOn(v)
+    localStorage.setItem('weekStartsOn', String(v))
+  }
+
   function onSwipeStart(e: React.TouchEvent) {
     swipeStartX.current = e.touches[0].clientX < 50 ? e.touches[0].clientX : -1
     swipeStartY.current = e.touches[0].clientY
@@ -113,6 +119,8 @@ export default function App() {
       {overlay === 'fridge' && (
         <FridgePicker
           ingredients={data.ingredients}
+          cycleEnabled={cycleEnabled}
+          cyclePhase={cyclePhase}
           onConfirm={(entries, style) => handleOpenBuilder({ entries, style })}
           onClose={() => setOverlay(null)}
         />
@@ -134,6 +142,7 @@ export default function App() {
           <MealPlanPage
             plannedMeals={data.plannedMeals}
             meals={data.meals}
+            weekStartsOn={weekStartsOn}
             onAdd={data.savePlannedMeal}
             onRemove={data.removePlannedMeal}
             onOpenBuilder={() => { setOverlay('builder') }}
@@ -163,6 +172,8 @@ export default function App() {
               ingredients={data.ingredients}
               initialEntries={builderInitialEntries}
               initialStyle={builderPreload?.style}
+              cycleEnabled={cycleEnabled}
+              cyclePhase={cyclePhase}
               onSave={(entries, mealType, portionCount, style) => {
                 handleSaveMeal(entries, mealType, portionCount, style)
                 setOverlay(null)
@@ -219,6 +230,8 @@ export default function App() {
             cyclePhase={cyclePhase}
             onCycleToggle={handleCycleToggle}
             onCyclePhaseChange={handleCyclePhaseChange}
+            weekStartsOn={weekStartsOn}
+            onWeekStartChange={handleWeekStartChange}
             ingredients={data.ingredients}
             onSaveIngredient={data.saveIngredient}
             onRemoveIngredient={data.removeIngredient}

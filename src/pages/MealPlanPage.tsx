@@ -1,17 +1,18 @@
 import { useState, useMemo } from 'react'
-import { Plus, ChevronRight } from 'lucide-react'
+import { Plus, ChevronRight, Flame } from 'lucide-react'
 import type { Meal, MealType, PlannedMeal } from '../types'
 
 const MEAL_TYPES: MealType[] = ['Frühstück', 'Mittagessen', 'Abendessen', 'Snack']
 
-function getWeekDays() {
+function getWeekDays(weekStartsOn: 0 | 1) {
   const days: { date: string; label: string; short: string }[] = []
   const today = new Date()
-  const monday = new Date(today)
-  monday.setDate(today.getDate() - ((today.getDay() + 6) % 7))
+  const start = new Date(today)
+  const offset = weekStartsOn === 1 ? (today.getDay() + 6) % 7 : today.getDay()
+  start.setDate(today.getDate() - offset)
   for (let i = 0; i < 7; i++) {
-    const d = new Date(monday)
-    d.setDate(monday.getDate() + i)
+    const d = new Date(start)
+    d.setDate(start.getDate() + i)
     days.push({
       date: d.toISOString().slice(0, 10),
       label: d.toLocaleDateString('de', { weekday: 'long', day: 'numeric', month: 'numeric' }),
@@ -24,19 +25,29 @@ function getWeekDays() {
 interface Props {
   plannedMeals: PlannedMeal[]
   meals: Meal[]
+  weekStartsOn?: 0 | 1
   onAdd: (p: PlannedMeal) => void
   onRemove: (id: string) => void
   onOpenBuilder: () => void
   onClose: () => void
 }
 
-export function MealPlanPage({ plannedMeals, meals, onAdd, onRemove, onOpenBuilder, onClose }: Props) {
+export function MealPlanPage({ plannedMeals, meals, weekStartsOn = 1, onAdd, onRemove, onOpenBuilder, onClose }: Props) {
   const [showPicker, setShowPicker] = useState<{ date: string; mealType: MealType } | null>(null)
-  const days = useMemo(() => getWeekDays(), [])
+  const days = useMemo(() => getWeekDays(weekStartsOn), [weekStartsOn])
   const mealMap = useMemo(() => new Map(meals.map(m => [m.id, m])), [meals])
 
   function getPlanned(date: string, mealType: MealType) {
     return plannedMeals.find(p => p.plannedDate === date && p.mealType === mealType)
+  }
+
+  function getDayKcal(date: string) {
+    return plannedMeals
+      .filter(p => p.plannedDate === date && p.mealId)
+      .reduce((sum, p) => {
+        const meal = mealMap.get(p.mealId!)
+        return sum + (meal?.generatedRecipe?.totalCalories ?? 0)
+      }, 0)
   }
 
   function pickMeal(mealId: string | null) {
@@ -59,42 +70,56 @@ export function MealPlanPage({ plannedMeals, meals, onAdd, onRemove, onOpenBuild
       </div>
 
       <div className="space-y-3">
-        {days.map(day => (
-          <div key={day.date} className="bg-white dark:bg-[#1c1c1e] rounded-xl overflow-hidden">
-            <div className="px-4 py-2.5 border-b border-gray-100 dark:border-[#38383a]">
-              <span className="font-semibold text-sm">{day.label}</span>
-            </div>
-            <div className="divide-y divide-gray-100 dark:divide-gray-800">
-              {MEAL_TYPES.map(mealType => {
-                const planned = getPlanned(day.date, mealType)
-                const meal = planned?.mealId ? mealMap.get(planned.mealId) : null
-                return (
-                  <div key={mealType} className="flex items-center justify-between px-4 py-2.5">
-                    <span className="text-xs text-gray-400 w-24 shrink-0">{mealType}</span>
-                    {planned ? (
-                      <div className="flex-1 flex items-center justify-between">
-                        <span className="text-sm font-medium truncate">
-                          {meal?.generatedRecipe?.title ?? 'Geplant'}
-                        </span>
+        {days.map(day => {
+          const dayKcal = getDayKcal(day.date)
+          return (
+            <div key={day.date} className="bg-white dark:bg-[#1c1c1e] rounded-xl overflow-hidden">
+              <div className="px-4 py-2.5 border-b border-gray-100 dark:border-[#38383a] flex items-center justify-between">
+                <span className="font-semibold text-sm">{day.label}</span>
+                {dayKcal > 0 && (
+                  <span className="flex items-center gap-1 text-xs text-gray-400">
+                    <Flame size={12} className="text-orange-400" />
+                    {Math.round(dayKcal)} kcal
+                  </span>
+                )}
+              </div>
+              <div className="divide-y divide-gray-100 dark:divide-gray-800">
+                {MEAL_TYPES.map(mealType => {
+                  const planned = getPlanned(day.date, mealType)
+                  const meal = planned?.mealId ? mealMap.get(planned.mealId) : null
+                  return (
+                    <div key={mealType} className="flex items-center justify-between px-4 py-2.5">
+                      <span className="text-xs text-gray-400 w-24 shrink-0">{mealType}</span>
+                      {planned ? (
+                        <div className="flex-1 flex items-center justify-between">
+                          <div className="min-w-0">
+                            <span className="text-sm font-medium truncate block">
+                              {meal?.generatedRecipe?.title ?? 'Geplant'}
+                            </span>
+                            {meal?.generatedRecipe?.totalCalories && (
+                              <span className="text-xs text-gray-400">{Math.round(meal.generatedRecipe.totalCalories)} kcal</span>
+                            )}
+                          </div>
+                          <button
+                            onClick={() => onRemove(planned.id)}
+                            className="text-gray-300 dark:text-[#636366] text-xs ml-2 shrink-0"
+                          >✕</button>
+                        </div>
+                      ) : (
                         <button
-                          onClick={() => onRemove(planned.id)}
-                          className="text-gray-300 dark:text-[#636366] text-xs ml-2 shrink-0"
-                        >✕</button>
-                      </div>
-                    ) : (
-                      <button
-                        onClick={() => setShowPicker({ date: day.date, mealType })}
-                        className="flex items-center gap-1 text-orange-500 text-xs font-medium ml-auto"
-                      >
-                        <Plus size={14} /> Hinzufügen
-                      </button>
-                    )}
-                  </div>
-                )
-              })}
+                          onClick={() => setShowPicker({ date: day.date, mealType })}
+                          className="flex items-center gap-1 text-orange-500 text-xs font-medium ml-auto"
+                        >
+                          <Plus size={14} /> Hinzufügen
+                        </button>
+                      )}
+                    </div>
+                  )
+                })}
+              </div>
             </div>
-          </div>
-        ))}
+          )
+        })}
       </div>
 
       {/* Meal picker modal */}
@@ -123,7 +148,10 @@ export function MealPlanPage({ plannedMeals, meals, onAdd, onRemove, onOpenBuild
                 >
                   <div>
                     <div className="text-sm font-medium">{meal.generatedRecipe?.title ?? 'Meal'}</div>
-                    <div className="text-xs text-gray-400">{meal.mealType} · {new Date(meal.createdAt).toLocaleDateString('de')}</div>
+                    <div className="text-xs text-gray-400">
+                      {meal.mealType} · {new Date(meal.createdAt).toLocaleDateString('de')}
+                      {meal.generatedRecipe?.totalCalories ? ` · ${Math.round(meal.generatedRecipe.totalCalories)} kcal` : ''}
+                    </div>
                   </div>
                   <ChevronRight size={16} className="text-gray-300" />
                 </button>

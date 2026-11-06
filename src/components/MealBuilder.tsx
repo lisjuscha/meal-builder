@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react'
 import { ChevronDown, ChevronUp, RotateCcw, Check, Flame, Clock, Star, BookmarkPlus } from 'lucide-react'
 import type { Ingredient, IngredientCategory, SelectedEntry, CookingStyle, MealType, MealTemplate } from '../types'
 import { generateRecipe } from '../utils/recipeGenerator'
-import { getHealthTags, isInSeason } from '../utils'
+import { getHealthTags, isInSeason, isCycleRecommended } from '../utils'
 import { MacroRing } from './MacroRing'
 
 const CATEGORIES: IngredientCategory[] = ['Protein', 'Kohlenhydrate', 'Gemüse', 'Obst', 'Milchprodukt', 'Fett', 'Gewürz']
@@ -14,11 +14,13 @@ interface Props {
   initialEntries?: SelectedEntry[]
   initialMealType?: MealType
   initialStyle?: CookingStyle
+  cycleEnabled?: boolean
+  cyclePhase?: string
   onSave: (entries: SelectedEntry[], mealType: MealType, portionCount: number, style: CookingStyle) => void
   onSaveTemplate: (template: Omit<MealTemplate, 'id' | 'createdAt'>) => void
 }
 
-export function MealBuilder({ ingredients, initialEntries = [], initialMealType = 'Mittagessen', initialStyle, onSave, onSaveTemplate }: Props) {
+export function MealBuilder({ ingredients, initialEntries = [], initialMealType = 'Mittagessen', initialStyle, cycleEnabled, cyclePhase, onSave, onSaveTemplate }: Props) {
   const [selected, setSelected] = useState<SelectedEntry[]>(initialEntries)
   const [mealType, setMealType] = useState<MealType>(initialMealType)
   const [portionCount, setPortionCount] = useState(1)
@@ -28,6 +30,8 @@ export function MealBuilder({ ingredients, initialEntries = [], initialMealType 
   const [templateTitle, setTemplateTitle] = useState('')
   const [showTemplateSave, setShowTemplateSave] = useState(false)
   const [search, setSearch] = useState('')
+  const [editingGramId, setEditingGramId] = useState<string | null>(null)
+  const [editingGramValue, setEditingGramValue] = useState('')
 
   const recipe = useMemo(() => {
     if (selected.length === 0) return null
@@ -44,6 +48,20 @@ export function MealBuilder({ ingredients, initialEntries = [], initialMealType 
 
   function updateAmount(id: string, amount: number) {
     setSelected(prev => prev.map(e => e.ingredient.id === id ? { ...e, amountGrams: Math.max(0, amount) } : e))
+  }
+
+  function startGramEdit(id: string, current: number) {
+    setEditingGramId(id)
+    setEditingGramValue(String(Math.round(current)))
+  }
+
+  function commitGramEdit() {
+    if (editingGramId) {
+      const v = Math.max(0, Math.round(Number(editingGramValue) || 0))
+      if (v > 0) updateAmount(editingGramId, v)
+      setEditingGramId(null)
+      setEditingGramValue('')
+    }
   }
 
   function cycleStyle() {
@@ -78,6 +96,70 @@ export function MealBuilder({ ingredients, initialEntries = [], initialMealType 
   const totalCarbs = selected.reduce((s, e) => s + e.ingredient.carbsPer100g * e.amountGrams / 100, 0)
   const totalFat = selected.reduce((s, e) => s + e.ingredient.fatPer100g * e.amountGrams / 100, 0)
 
+  function renderGramControl(ing: Ingredient, entry: SelectedEntry | undefined) {
+    const grams = entry?.amountGrams ?? 0
+    return (
+      <div className="flex items-center gap-1 shrink-0">
+        <button onClick={() => updateAmount(ing.id, grams - 25)} className="w-7 h-7 rounded-full bg-gray-100 dark:bg-[#2c2c2e] flex items-center justify-center text-sm font-bold">−</button>
+        {editingGramId === ing.id ? (
+          <input
+            type="number"
+            inputMode="decimal"
+            value={editingGramValue}
+            onChange={e => setEditingGramValue(e.target.value)}
+            onBlur={commitGramEdit}
+            onKeyDown={e => { if (e.key === 'Enter') e.currentTarget.blur() }}
+            autoFocus
+            className="w-14 text-center font-semibold border border-orange-400 rounded-lg px-1 bg-white dark:bg-[#2c2c2e]"
+          />
+        ) : (
+          <button
+            onClick={() => startGramEdit(ing.id, grams)}
+            className="w-14 text-center text-xs font-semibold text-orange-500 underline underline-offset-2"
+          >
+            {Math.round(grams)}g
+          </button>
+        )}
+        <button onClick={() => updateAmount(ing.id, grams + 25)} className="w-7 h-7 rounded-full bg-gray-100 dark:bg-[#2c2c2e] flex items-center justify-center text-sm font-bold">+</button>
+      </div>
+    )
+  }
+
+  function renderIngredientRow(ing: Ingredient) {
+    const entry = selected.find(e => e.ingredient.id === ing.id)
+    const isSelected = !!entry
+    const tags = getHealthTags(ing)
+    const seasonal = isInSeason(ing.name)
+    const isCycleRec = cycleEnabled && cyclePhase ? isCycleRecommended(ing.name, cyclePhase) : false
+    return (
+      <div key={ing.id} className={`px-4 py-2.5 border-b border-gray-50 dark:border-[#38383a] last:border-b-0 ${isSelected ? 'bg-orange-50 dark:bg-orange-950' : ''}`}>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => toggleIngredient(ing)}
+            className={`w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors ${isSelected ? 'bg-orange-500 border-orange-500' : 'border-gray-300 dark:border-[#48484a]'}`}
+          >
+            {isSelected && <Check size={12} className="text-white" />}
+          </button>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-1 flex-wrap">
+              <span className="text-sm font-medium">{ing.name}</span>
+              {ing.isFavorite && <span className="text-yellow-400 text-xs">★</span>}
+              {seasonal && <span className="text-sm">🍃</span>}
+              {isCycleRec && (
+                <span className="text-[10px] px-1.5 py-0.5 rounded-full font-medium bg-pink-100 text-pink-800 dark:bg-pink-900 dark:text-pink-200">♥ {cyclePhase}</span>
+              )}
+              {!isCycleRec && tags.map(tag => (
+                <span key={tag.label} className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ${tag.color}`}>{tag.label}</span>
+              ))}
+            </div>
+            <span className="text-xs text-gray-400">{ing.category} · {Math.round(ing.caloriesPer100g)} kcal/100g</span>
+          </div>
+          {isSelected && renderGramControl(ing, entry)}
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="pb-4">
       {/* Meal type */}
@@ -102,7 +184,7 @@ export function MealBuilder({ ingredients, initialEntries = [], initialMealType 
             value={search}
             onChange={e => setSearch(e.target.value)}
             placeholder="Zutat suchen…"
-            className="w-full border border-gray-200 dark:border-[#48484a] rounded-xl px-4 py-2.5 text-sm bg-white dark:bg-[#1c1c1e] placeholder-gray-400"
+            className="w-full border border-gray-200 dark:border-[#48484a] rounded-xl px-4 py-2.5 bg-white dark:bg-[#1c1c1e] placeholder-gray-400"
           />
           {search && (
             <button onClick={() => setSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">✕</button>
@@ -116,42 +198,7 @@ export function MealBuilder({ ingredients, initialEntries = [], initialMealType 
             <div className="text-center text-sm text-gray-400 py-8">Keine Zutaten gefunden</div>
           ) : (
             <div className="bg-white dark:bg-[#1c1c1e] rounded-xl overflow-hidden">
-              {filteredIngredients.map(ing => {
-                const entry = selected.find(e => e.ingredient.id === ing.id)
-                const isSelected = !!entry
-                const tags = getHealthTags(ing)
-                const seasonal = isInSeason(ing.name)
-                return (
-                  <div key={ing.id} className={`px-4 py-2.5 border-b border-gray-50 dark:border-[#38383a] last:border-b-0 ${isSelected ? 'bg-orange-50 dark:bg-orange-950' : ''}`}>
-                    <div className="flex items-center gap-3">
-                      <button
-                        onClick={() => toggleIngredient(ing)}
-                        className={`w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors ${isSelected ? 'bg-orange-500 border-orange-500' : 'border-gray-300 dark:border-[#48484a]'}`}
-                      >
-                        {isSelected && <Check size={12} className="text-white" />}
-                      </button>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-1 flex-wrap">
-                          <span className="text-sm font-medium">{ing.name}</span>
-                          {ing.isFavorite && <span className="text-yellow-400 text-xs">★</span>}
-                          {seasonal && <span className="text-sm">🍃</span>}
-                          {tags.map(tag => (
-                            <span key={tag.label} className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ${tag.color}`}>{tag.label}</span>
-                          ))}
-                        </div>
-                        <span className="text-xs text-gray-400">{ing.category} · {Math.round(ing.caloriesPer100g)} kcal/100g</span>
-                      </div>
-                      {isSelected && (
-                        <div className="flex items-center gap-1 shrink-0">
-                          <button onClick={() => updateAmount(ing.id, (entry?.amountGrams ?? 0) - 25)} className="w-7 h-7 rounded-full bg-gray-100 dark:bg-[#2c2c2e] flex items-center justify-center text-sm font-bold">−</button>
-                          <span className="w-14 text-center text-xs font-medium">{Math.round(entry?.amountGrams ?? 0)}g</span>
-                          <button onClick={() => updateAmount(ing.id, (entry?.amountGrams ?? 0) + 25)} className="w-7 h-7 rounded-full bg-gray-100 dark:bg-[#2c2c2e] flex items-center justify-center text-sm font-bold">+</button>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                )
-              })}
+              {filteredIngredients.map(ing => renderIngredientRow(ing))}
             </div>
           )}
         </div>
@@ -179,44 +226,7 @@ export function MealBuilder({ ingredients, initialEntries = [], initialMealType 
               </button>
               {isOpen && (
                 <div className="border-t border-gray-100 dark:border-[#38383a]">
-                  {catIngredients.map(ing => {
-                    const entry = selected.find(e => e.ingredient.id === ing.id)
-                    const isSelected = !!entry
-                    const tags = getHealthTags(ing)
-                    const seasonal = isInSeason(ing.name)
-                    return (
-                      <div key={ing.id} className={`px-4 py-2.5 border-b border-gray-50 dark:border-[#38383a] last:border-b-0 ${isSelected ? 'bg-orange-50 dark:bg-orange-950' : ''}`}>
-                        <div className="flex items-center gap-3">
-                          <button
-                            onClick={() => toggleIngredient(ing)}
-                            className={`w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors ${
-                              isSelected ? 'bg-orange-500 border-orange-500' : 'border-gray-300 dark:border-[#48484a]'
-                            }`}
-                          >
-                            {isSelected && <Check size={12} className="text-white" />}
-                          </button>
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-1 flex-wrap">
-                              <span className="text-sm font-medium">{ing.name}</span>
-                              {ing.isFavorite && <span className="text-yellow-400 text-xs">★</span>}
-                              {seasonal && <span className="text-sm">🍃</span>}
-                              {tags.map(tag => (
-                                <span key={tag.label} className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ${tag.color}`}>{tag.label}</span>
-                              ))}
-                            </div>
-                            <span className="text-xs text-gray-400">{Math.round(ing.caloriesPer100g)} kcal/100g · P: {ing.proteinPer100g}g</span>
-                          </div>
-                          {isSelected && (
-                            <div className="flex items-center gap-1 shrink-0">
-                              <button onClick={() => updateAmount(ing.id, (entry?.amountGrams ?? 0) - 25)} className="w-7 h-7 rounded-full bg-gray-100 dark:bg-[#2c2c2e] flex items-center justify-center text-sm font-bold">−</button>
-                              <span className="w-14 text-center text-xs font-medium">{Math.round(entry?.amountGrams ?? 0)}g</span>
-                              <button onClick={() => updateAmount(ing.id, (entry?.amountGrams ?? 0) + 25)} className="w-7 h-7 rounded-full bg-gray-100 dark:bg-[#2c2c2e] flex items-center justify-center text-sm font-bold">+</button>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    )
-                  })}
+                  {catIngredients.map(ing => renderIngredientRow(ing))}
                 </div>
               )}
             </div>
@@ -282,7 +292,7 @@ export function MealBuilder({ ingredients, initialEntries = [], initialMealType 
           <div className="bg-white dark:bg-[#1c1c1e] w-full rounded-t-3xl p-6" onClick={e => e.stopPropagation()}>
             <h3 className="font-bold text-lg mb-4">Vorlage speichern</h3>
             <input
-              className="w-full border border-gray-200 dark:border-[#48484a] rounded-xl px-4 py-3 text-sm bg-transparent mb-4"
+              className="w-full border border-gray-200 dark:border-[#48484a] rounded-xl px-4 py-3 bg-transparent mb-4"
               placeholder="Name der Vorlage (optional)"
               value={templateTitle}
               onChange={e => setTemplateTitle(e.target.value)}
