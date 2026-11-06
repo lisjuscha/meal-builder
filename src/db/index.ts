@@ -105,6 +105,10 @@ export async function deletePlannedMeal(id: string): Promise<void> {
   const db = await getDB()
   await db.delete('plannedMeals', id)
 }
+export async function clearPlannedMeals(): Promise<void> {
+  const db = await getDB()
+  await db.clear('plannedMeals')
+}
 
 // Shopping List
 export async function getAllShoppingItems(): Promise<ShoppingListItem[]> {

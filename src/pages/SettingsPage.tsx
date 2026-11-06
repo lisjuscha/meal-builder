@@ -20,15 +20,17 @@ interface Props {
   cyclePhase: string
   onCycleToggle: (v: boolean) => void
   onCyclePhaseChange: (v: string) => void
-  weekStartsOn: 0 | 1
-  onWeekStartChange: (v: 0 | 1) => void
+  weekStartsOn: number
+  onWeekStartChange: (v: number) => void
+  planDays: number
+  onPlanDaysChange: (v: number) => void
   ingredients: Ingredient[]
   onSaveIngredient: (i: Ingredient) => void
   onRemoveIngredient: (id: string) => void
   onOpenImport: () => void
 }
 
-export function SettingsPage({ dailyKcalGoal, onGoalChange, proteinGoalG, onProteinGoalChange, carbsGoalG, onCarbsGoalChange, fatGoalG, onFatGoalChange, waterGoalMl, onWaterGoalChange, cycleEnabled, cyclePhase, onCycleToggle, onCyclePhaseChange, weekStartsOn, onWeekStartChange, ingredients, onSaveIngredient, onRemoveIngredient, onOpenImport }: Props) {
+export function SettingsPage({ dailyKcalGoal, onGoalChange, proteinGoalG, onProteinGoalChange, carbsGoalG, onCarbsGoalChange, fatGoalG, onFatGoalChange, waterGoalMl, onWaterGoalChange, cycleEnabled, cyclePhase, onCycleToggle, onCyclePhaseChange, weekStartsOn, onWeekStartChange, planDays, onPlanDaysChange, ingredients, onSaveIngredient, onRemoveIngredient, onOpenImport }: Props) {
   const [goal, setGoal] = useState(String(dailyKcalGoal))
   const [protein, setProtein] = useState(String(proteinGoalG))
   const [carbs, setCarbs] = useState(String(carbsGoalG))
@@ -209,19 +211,34 @@ export function SettingsPage({ dailyKcalGoal, onGoalChange, proteinGoalG, onProt
         )}
       </div>
 
-      {/* Week start day */}
+      {/* Week start day + plan duration */}
       <div className="bg-white dark:bg-[#1c1c1e] rounded-xl p-4">
-        <h2 className="font-semibold mb-3">Woche beginnt am</h2>
-        <div className="flex gap-2">
-          {([{ value: 1 as const, label: 'Montag' }, { value: 0 as const, label: 'Sonntag' }]).map(opt => (
+        <h2 className="font-semibold mb-3">Planungszeitraum</h2>
+        <p className="text-xs text-gray-400 mb-2">Startag</p>
+        <div className="flex gap-1.5 mb-4">
+          {['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'].map((label, i) => (
             <button
-              key={opt.value}
-              onClick={() => onWeekStartChange(opt.value)}
-              className={`flex-1 py-2 rounded-xl text-sm font-medium transition-colors ${
-                weekStartsOn === opt.value ? 'bg-orange-500 text-white' : 'bg-gray-100 dark:bg-[#2c2c2e] text-gray-600 dark:text-[#c7c7cc]'
+              key={i}
+              onClick={() => onWeekStartChange(i)}
+              className={`flex-1 py-2 rounded-xl text-xs font-medium transition-colors ${
+                weekStartsOn === i ? 'bg-orange-500 text-white' : 'bg-gray-100 dark:bg-[#2c2c2e] text-gray-600 dark:text-[#c7c7cc]'
               }`}
             >
-              {opt.label}
+              {label}
+            </button>
+          ))}
+        </div>
+        <p className="text-xs text-gray-400 mb-2">Tage anzeigen</p>
+        <div className="flex gap-2">
+          {[3, 5, 7, 10, 14].map(n => (
+            <button
+              key={n}
+              onClick={() => onPlanDaysChange(n)}
+              className={`flex-1 py-2 rounded-xl text-sm font-medium transition-colors ${
+                planDays === n ? 'bg-orange-500 text-white' : 'bg-gray-100 dark:bg-[#2c2c2e] text-gray-600 dark:text-[#c7c7cc]'
+              }`}
+            >
+              {n}
             </button>
           ))}
         </div>

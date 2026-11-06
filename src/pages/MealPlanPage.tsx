@@ -1,22 +1,21 @@
 import { useState, useMemo } from 'react'
-import { Plus, ChevronRight, Flame } from 'lucide-react'
+import { Plus, ChevronRight, Flame, RotateCcw } from 'lucide-react'
 import type { Meal, MealType, PlannedMeal } from '../types'
 
 const MEAL_TYPES: MealType[] = ['Frühstück', 'Mittagessen', 'Abendessen', 'Snack']
 
-function getWeekDays(weekStartsOn: 0 | 1) {
-  const days: { date: string; label: string; short: string }[] = []
+function getPlanDays(weekStartsOn: number, planDays: number) {
+  const days: { date: string; label: string }[] = []
   const today = new Date()
   const start = new Date(today)
-  const offset = weekStartsOn === 1 ? (today.getDay() + 6) % 7 : today.getDay()
+  const offset = (today.getDay() - weekStartsOn + 7) % 7
   start.setDate(today.getDate() - offset)
-  for (let i = 0; i < 7; i++) {
+  for (let i = 0; i < planDays; i++) {
     const d = new Date(start)
     d.setDate(start.getDate() + i)
     days.push({
       date: d.toISOString().slice(0, 10),
       label: d.toLocaleDateString('de', { weekday: 'long', day: 'numeric', month: 'numeric' }),
-      short: d.toLocaleDateString('de', { weekday: 'short' }),
     })
   }
   return days
@@ -25,16 +24,19 @@ function getWeekDays(weekStartsOn: 0 | 1) {
 interface Props {
   plannedMeals: PlannedMeal[]
   meals: Meal[]
-  weekStartsOn?: 0 | 1
+  weekStartsOn?: number
+  planDays?: number
   onAdd: (p: PlannedMeal) => void
   onRemove: (id: string) => void
+  onResetPlan: () => void
   onOpenBuilder: () => void
   onClose: () => void
 }
 
-export function MealPlanPage({ plannedMeals, meals, weekStartsOn = 1, onAdd, onRemove, onOpenBuilder, onClose }: Props) {
+export function MealPlanPage({ plannedMeals, meals, weekStartsOn = 1, planDays = 7, onAdd, onRemove, onResetPlan, onOpenBuilder, onClose }: Props) {
   const [showPicker, setShowPicker] = useState<{ date: string; mealType: MealType } | null>(null)
-  const days = useMemo(() => getWeekDays(weekStartsOn), [weekStartsOn])
+  const [confirmReset, setConfirmReset] = useState(false)
+  const days = useMemo(() => getPlanDays(weekStartsOn, planDays), [weekStartsOn, planDays])
   const mealMap = useMemo(() => new Map(meals.map(m => [m.id, m])), [meals])
 
   function getPlanned(date: string, mealType: MealType) {
@@ -66,7 +68,12 @@ export function MealPlanPage({ plannedMeals, meals, weekStartsOn = 1, onAdd, onR
       <div className="flex items-center justify-between mb-4">
         <button onClick={onClose} className="text-gray-400 font-medium text-sm">← Zurück</button>
         <h1 className="text-xl font-bold">Mahlzeitenplan</h1>
-        <div className="w-16" />
+        <button
+          onClick={() => setConfirmReset(true)}
+          className="flex items-center gap-1 text-orange-500 text-sm font-medium"
+        >
+          <RotateCcw size={14} /> Neue Woche
+        </button>
       </div>
 
       <div className="space-y-3">
@@ -121,6 +128,23 @@ export function MealPlanPage({ plannedMeals, meals, weekStartsOn = 1, onAdd, onR
           )
         })}
       </div>
+
+      {/* Reset confirm */}
+      {confirmReset && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-end" onClick={() => setConfirmReset(false)}>
+          <div className="bg-white dark:bg-[#1c1c1e] w-full rounded-t-3xl p-6" onClick={e => e.stopPropagation()}>
+            <h3 className="font-bold text-lg mb-1">Plan zurücksetzen?</h3>
+            <p className="text-sm text-gray-400 mb-5">Alle geplanten Mahlzeiten werden gelöscht. Die gespeicherten Meals bleiben erhalten.</p>
+            <div className="flex gap-2">
+              <button onClick={() => setConfirmReset(false)} className="flex-1 bg-gray-100 dark:bg-[#2c2c2e] rounded-xl py-3 text-sm font-medium">Abbrechen</button>
+              <button
+                onClick={() => { setConfirmReset(false); onResetPlan() }}
+                className="flex-1 bg-red-500 text-white rounded-xl py-3 text-sm font-semibold"
+              >Zurücksetzen</button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Meal picker modal */}
       {showPicker && (

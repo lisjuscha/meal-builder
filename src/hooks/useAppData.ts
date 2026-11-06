@@ -69,6 +69,11 @@ export function useAppData() {
     await reload()
   }, [reload])
 
+  const clearPlannedMeals = useCallback(async () => {
+    await db.clearPlannedMeals()
+    await reload()
+  }, [reload])
+
   const addShoppingItems = useCallback(async (items: ShoppingListItem[]) => {
     await Promise.all(items.map(db.putShoppingItem))
     await reload()
@@ -93,7 +98,7 @@ export function useAppData() {
     ready, ingredients, meals, templates, plannedMeals, shoppingList,
     saveMeal, removeMeal, saveTemplate, removeTemplate,
     saveIngredient, removeIngredient,
-    savePlannedMeal, removePlannedMeal,
+    savePlannedMeal, removePlannedMeal, clearPlannedMeals,
     addShoppingItems, toggleShoppingItem, removeShoppingItem, clearShopping,
     reload,
   }

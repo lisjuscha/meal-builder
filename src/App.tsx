@@ -26,7 +26,11 @@ export default function App() {
   const [waterGoalMl, setWaterGoalMl] = useState(() => Number(localStorage.getItem('waterGoalMl') ?? 2000))
   const [cycleEnabled, setCycleEnabled] = useState(() => localStorage.getItem('cycleEnabled') === 'true')
   const [cyclePhase, setCyclePhase] = useState(() => localStorage.getItem('cyclePhase') ?? 'Follikulär')
-  const [weekStartsOn, setWeekStartsOn] = useState<0 | 1>(() => localStorage.getItem('weekStartsOn') === '0' ? 0 : 1)
+  const [weekStartsOn, setWeekStartsOn] = useState<number>(() => {
+    const v = localStorage.getItem('weekStartsOn')
+    return v !== null ? Number(v) : 1
+  })
+  const [planDays, setPlanDays] = useState<number>(() => Number(localStorage.getItem('planDays') ?? 7))
 
   const data = useAppData()
   const ingMap = useMemo(() => new Map(data.ingredients.map(i => [i.id, i])), [data.ingredients])
@@ -97,9 +101,14 @@ export default function App() {
     localStorage.setItem('cyclePhase', v)
   }
 
-  function handleWeekStartChange(v: 0 | 1) {
+  function handleWeekStartChange(v: number) {
     setWeekStartsOn(v)
     localStorage.setItem('weekStartsOn', String(v))
+  }
+
+  function handlePlanDaysChange(v: number) {
+    setPlanDays(v)
+    localStorage.setItem('planDays', String(v))
   }
 
   function onSwipeStart(e: React.TouchEvent) {
@@ -143,8 +152,10 @@ export default function App() {
             plannedMeals={data.plannedMeals}
             meals={data.meals}
             weekStartsOn={weekStartsOn}
+            planDays={planDays}
             onAdd={data.savePlannedMeal}
             onRemove={data.removePlannedMeal}
+            onResetPlan={data.clearPlannedMeals}
             onOpenBuilder={() => { setOverlay('builder') }}
             onClose={() => setOverlay(null)}
           />
@@ -232,6 +243,8 @@ export default function App() {
             onCyclePhaseChange={handleCyclePhaseChange}
             weekStartsOn={weekStartsOn}
             onWeekStartChange={handleWeekStartChange}
+            planDays={planDays}
+            onPlanDaysChange={handlePlanDaysChange}
             ingredients={data.ingredients}
             onSaveIngredient={data.saveIngredient}
             onRemoveIngredient={data.removeIngredient}
