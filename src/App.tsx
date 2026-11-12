@@ -31,6 +31,9 @@ export default function App() {
     return v !== null ? Number(v) : 1
   })
   const [planDays, setPlanDays] = useState<number>(() => Number(localStorage.getItem('planDays') ?? 7))
+  const [dietaryRestrictions, setDietaryRestrictions] = useState<string[]>(() => {
+    try { return JSON.parse(localStorage.getItem('dietaryRestrictions') ?? '[]') } catch { return [] }
+  })
 
   const data = useAppData()
   const ingMap = useMemo(() => new Map(data.ingredients.map(i => [i.id, i])), [data.ingredients])
@@ -111,6 +114,11 @@ export default function App() {
     localStorage.setItem('planDays', String(v))
   }
 
+  function handleDietaryRestrictionsChange(v: string[]) {
+    setDietaryRestrictions(v)
+    localStorage.setItem('dietaryRestrictions', JSON.stringify(v))
+  }
+
   function onSwipeStart(e: React.TouchEvent) {
     swipeStartX.current = e.touches[0].clientX < 50 ? e.touches[0].clientX : -1
     swipeStartY.current = e.touches[0].clientY
@@ -130,6 +138,7 @@ export default function App() {
           ingredients={data.ingredients}
           cycleEnabled={cycleEnabled}
           cyclePhase={cyclePhase}
+          dietaryRestrictions={dietaryRestrictions}
           onConfirm={(entries, style) => handleOpenBuilder({ entries, style })}
           onClose={() => setOverlay(null)}
         />
@@ -185,6 +194,7 @@ export default function App() {
               initialStyle={builderPreload?.style}
               cycleEnabled={cycleEnabled}
               cyclePhase={cyclePhase}
+              dietaryRestrictions={dietaryRestrictions}
               onSave={(entries, mealType, portionCount, style) => {
                 handleSaveMeal(entries, mealType, portionCount, style)
                 setOverlay(null)
@@ -245,6 +255,8 @@ export default function App() {
             onWeekStartChange={handleWeekStartChange}
             planDays={planDays}
             onPlanDaysChange={handlePlanDaysChange}
+            dietaryRestrictions={dietaryRestrictions}
+            onDietaryRestrictionsChange={handleDietaryRestrictionsChange}
             ingredients={data.ingredients}
             onSaveIngredient={data.saveIngredient}
             onRemoveIngredient={data.removeIngredient}

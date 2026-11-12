@@ -12,11 +12,12 @@ interface Props {
   ingredients: Ingredient[]
   cycleEnabled?: boolean
   cyclePhase?: string
+  dietaryRestrictions?: string[]
   onConfirm: (entries: { ingredientId: string; amountGrams: number }[], style: CookingStyle) => void
   onClose: () => void
 }
 
-export function FridgePicker({ ingredients, cycleEnabled, cyclePhase, onConfirm, onClose }: Props) {
+export function FridgePicker({ ingredients, cycleEnabled, cyclePhase, dietaryRestrictions, onConfirm, onClose }: Props) {
   const [selected, setSelected] = useState<Set<string>>(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY)
@@ -146,6 +147,7 @@ export function FridgePicker({ ingredients, cycleEnabled, cyclePhase, onConfirm,
                     const tags = getHealthTags(ing)
                     const seasonal = isInSeason(ing.name)
                     const isCycleRec = cycleEnabled && cyclePhase ? isCycleRecommended(ing.name, cyclePhase) : false
+                    const hasAllergen = !!(dietaryRestrictions?.length && ing.allergens?.some(a => dietaryRestrictions.includes(a)))
                     return (
                       <button
                         key={ing.id}
@@ -153,17 +155,22 @@ export function FridgePicker({ ingredients, cycleEnabled, cyclePhase, onConfirm,
                         className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium border transition-all ${
                           isSelected
                             ? 'bg-orange-500 border-orange-500 text-white'
-                            : 'bg-gray-50 dark:bg-[#2c2c2e] border-gray-200 dark:border-[#48484a] text-gray-700 dark:text-[#c7c7cc]'
+                            : hasAllergen
+                              ? 'bg-red-50 dark:bg-red-950 border-red-200 dark:border-red-800 text-gray-700 dark:text-[#c7c7cc]'
+                              : 'bg-gray-50 dark:bg-[#2c2c2e] border-gray-200 dark:border-[#48484a] text-gray-700 dark:text-[#c7c7cc]'
                         }`}
                       >
                         {isSelected && <Check size={12} />}
                         {ing.isFavorite && !isSelected && <span className="text-yellow-400 text-xs">★</span>}
                         {ing.name}
                         {seasonal && ' 🍃'}
-                        {!isSelected && isCycleRec && (
+                        {!isSelected && hasAllergen && (
+                          <span className="w-1.5 h-1.5 rounded-full bg-red-400 inline-block" />
+                        )}
+                        {!isSelected && !hasAllergen && isCycleRec && (
                           <span className="w-1.5 h-1.5 rounded-full bg-pink-400 inline-block" />
                         )}
-                        {!isSelected && !isCycleRec && tags.length > 0 && (
+                        {!isSelected && !hasAllergen && !isCycleRec && tags.length > 0 && (
                           <span className="w-1.5 h-1.5 rounded-full bg-purple-400 inline-block" />
                         )}
                       </button>

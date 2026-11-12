@@ -5,7 +5,16 @@ function step(text: string): RecipeStep {
 }
 
 function amount(entry: SelectedEntry, portions: number): string {
+  const ing = entry.ingredient
+  if (ing.unit === 'stk' && ing.gramsPerUnit) {
+    const count = Math.round((entry.amountGrams * portions) / ing.gramsPerUnit)
+    return `${count} Stk.`
+  }
   return `${Math.round(entry.amountGrams * portions)} g`
+}
+
+function buildIngredientList(entries: SelectedEntry[], portions: number): string[] {
+  return entries.map(e => `${amount(e, portions)} ${e.ingredient.name}`)
 }
 
 // ─── Protein: ingredient-specific cooking per style ───────────────────────────
@@ -173,7 +182,9 @@ function flavorSteps(
       steps.push(`${dairy.map(e => `${amount(e, portions)} ${e.ingredient.name}`).join(', ')} einrühren oder als cremiges Topping darüber geben.`)
     }
     const spiceNames = spices.length ? spices.map(e => e.ingredient.name).join(', ') + ' und ' : ''
-    steps.push(`Mit ${spiceNames}frisch gemahlenem Pfeffer, Salz und einem Spritzer Zitronensaft final abschmecken — jetzt erst entscheidet sich die Balance.`)
+    const hasLemon = spices.some(e => e.ingredient.name.toLowerCase().includes('zitron'))
+    const lemonText = hasLemon ? ' und einem Spritzer Zitronensaft' : ''
+    steps.push(`Mit ${spiceNames}frisch gemahlenem Pfeffer und Salz${lemonText} final abschmecken — jetzt erst entscheidet sich die Balance.`)
     if (fruits.length) {
       steps.push(`${fruits.map(e => `${amount(e, portions)} ${e.ingredient.name}`).join(', ')} kleinschneiden und frisch dazugeben — der Säure-Kontrast rundet das Gericht ab.`)
     }
@@ -195,7 +206,9 @@ function flavorSteps(
       steps.push(`${fats.map(e => `${amount(e, portions)} ${e.ingredient.name}`).join(', ')} großzügig verwenden — Olivenöl und Fette sind hier Geschmacksträger, kein Luxus.`)
     }
     const spiceNames = spices.length ? spices.map(e => e.ingredient.name).join(', ') + ', ' : ''
-    steps.push(`Mit ${spiceNames}frischen Kräutern (Basilikum, Petersilie oder Oregano), Fleur de Sel und einem kräftigen Spritzer Zitronensaft würzen. Fertig ist es dann, wenn es nach mehr schmeckt.`)
+    const hasLemon = spices.some(e => e.ingredient.name.toLowerCase().includes('zitron'))
+    const lemonText = hasLemon ? ' und einem kräftigen Spritzer Zitronensaft' : ''
+    steps.push(`Mit ${spiceNames}frischen Kräutern (Basilikum, Petersilie oder Oregano) und Fleur de Sel${lemonText} würzen. Fertig ist es dann, wenn es nach mehr schmeckt.`)
     if (dairy.length) {
       steps.push(`${dairy.map(e => `${amount(e, portions)} ${e.ingredient.name}`).join(', ')} als cremiges Element einsetzen oder kalt darüber bröseln/geben.`)
     }
@@ -270,10 +283,6 @@ export function generateRecipe(
 
   const steps: RecipeStep[] = []
 
-  // Mise en place
-  const miseItems = entries.slice(0, 5).map(e => `${amount(e, portionCount)} ${e.ingredient.name}`)
-  steps.push(step(`Mise en place: ${miseItems.join(', ')}${entries.length > 5 ? ' und weitere Zutaten' : ''} abwiegen und bereitstellen. Auf Zimmertemperatur bringen, waschen, schneiden.`))
-
   // Carbs in parallel — start first if they take long
   if (carb && (carb.ingredient.name.toLowerCase().includes('reis') || carb.ingredient.name.toLowerCase().includes('quinoa') || carb.ingredient.name.toLowerCase().includes('kartoffel'))) {
     for (const s of carbSteps(carb.ingredient.name, amount(carb, portionCount), style)) {
@@ -327,6 +336,7 @@ export function generateRecipe(
 
   return {
     title,
+    ingredientList: buildIngredientList(entries, portionCount),
     steps,
     estimatedTimeMinutes: timeBase + proteinTime + Math.max(carbTime, proteinTime) - Math.min(carbTime, proteinTime) / 2 + vegTime + marinateTime,
     totalCalories: scale('caloriesPer100g'),

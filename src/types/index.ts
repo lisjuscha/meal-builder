@@ -27,6 +27,9 @@ export interface Ingredient {
   fiberPer100g: number
   defaultAmountGrams: number
   isFavorite: boolean
+  unit?: 'g' | 'stk'
+  gramsPerUnit?: number
+  allergens?: string[]
 }
 
 export interface IngredientEntry {
@@ -41,6 +44,7 @@ export interface RecipeStep {
 
 export interface GeneratedRecipe {
   title: string
+  ingredientList: string[]
   steps: RecipeStep[]
   estimatedTimeMinutes: number
   totalCalories: number

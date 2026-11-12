@@ -24,13 +24,15 @@ interface Props {
   onWeekStartChange: (v: number) => void
   planDays: number
   onPlanDaysChange: (v: number) => void
+  dietaryRestrictions: string[]
+  onDietaryRestrictionsChange: (v: string[]) => void
   ingredients: Ingredient[]
   onSaveIngredient: (i: Ingredient) => void
   onRemoveIngredient: (id: string) => void
   onOpenImport: () => void
 }
 
-export function SettingsPage({ dailyKcalGoal, onGoalChange, proteinGoalG, onProteinGoalChange, carbsGoalG, onCarbsGoalChange, fatGoalG, onFatGoalChange, waterGoalMl, onWaterGoalChange, cycleEnabled, cyclePhase, onCycleToggle, onCyclePhaseChange, weekStartsOn, onWeekStartChange, planDays, onPlanDaysChange, ingredients, onSaveIngredient, onRemoveIngredient, onOpenImport }: Props) {
+export function SettingsPage({ dailyKcalGoal, onGoalChange, proteinGoalG, onProteinGoalChange, carbsGoalG, onCarbsGoalChange, fatGoalG, onFatGoalChange, waterGoalMl, onWaterGoalChange, cycleEnabled, cyclePhase, onCycleToggle, onCyclePhaseChange, weekStartsOn, onWeekStartChange, planDays, onPlanDaysChange, dietaryRestrictions, onDietaryRestrictionsChange, ingredients, onSaveIngredient, onRemoveIngredient, onOpenImport }: Props) {
   const [goal, setGoal] = useState(String(dailyKcalGoal))
   const [protein, setProtein] = useState(String(proteinGoalG))
   const [carbs, setCarbs] = useState(String(carbsGoalG))
@@ -183,6 +185,35 @@ export function SettingsPage({ dailyKcalGoal, onGoalChange, proteinGoalG, onProt
         <button onClick={saveMacroGoals} className="w-full bg-orange-500 text-white rounded-xl py-2.5 text-sm font-medium">
           Ziele speichern
         </button>
+      </div>
+
+      {/* Dietary restrictions */}
+      <div className="bg-white dark:bg-[#1c1c1e] rounded-xl p-4">
+        <h2 className="font-semibold mb-1">Unverträglichkeiten & Allergien</h2>
+        <p className="text-xs text-gray-400 mb-3">Markierte Zutaten erhalten eine Warnung im Meal Builder und Kühlschrank.</p>
+        <div className="flex flex-wrap gap-2">
+          {(['Gluten', 'Laktose', 'Fruktose', 'Nüsse', 'Soja', 'Ei'] as const).map(r => {
+            const active = dietaryRestrictions.includes(r)
+            return (
+              <button
+                key={r}
+                onClick={() => {
+                  const next = active
+                    ? dietaryRestrictions.filter(x => x !== r)
+                    : [...dietaryRestrictions, r]
+                  onDietaryRestrictionsChange(next)
+                }}
+                className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-colors ${
+                  active
+                    ? 'bg-red-500 border-red-500 text-white'
+                    : 'bg-gray-100 dark:bg-[#2c2c2e] border-gray-200 dark:border-[#48484a] text-gray-600 dark:text-[#c7c7cc]'
+                }`}
+              >
+                {active ? '✓ ' : ''}{r}frei
+              </button>
+            )
+          })}
+        </div>
       </div>
 
       {/* Cycle */}

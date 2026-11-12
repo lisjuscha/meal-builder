@@ -16,11 +16,12 @@ interface Props {
   initialStyle?: CookingStyle
   cycleEnabled?: boolean
   cyclePhase?: string
+  dietaryRestrictions?: string[]
   onSave: (entries: SelectedEntry[], mealType: MealType, portionCount: number, style: CookingStyle) => void
   onSaveTemplate: (template: Omit<MealTemplate, 'id' | 'createdAt'>) => void
 }
 
-export function MealBuilder({ ingredients, initialEntries = [], initialMealType = 'Mittagessen', initialStyle, cycleEnabled, cyclePhase, onSave, onSaveTemplate }: Props) {
+export function MealBuilder({ ingredients, initialEntries = [], initialMealType = 'Mittagessen', initialStyle, cycleEnabled, cyclePhase, dietaryRestrictions, onSave, onSaveTemplate }: Props) {
   const [selected, setSelected] = useState<SelectedEntry[]>(initialEntries)
   const [mealType, setMealType] = useState<MealType>(initialMealType)
   const [portionCount, setPortionCount] = useState(1)
@@ -98,6 +99,19 @@ export function MealBuilder({ ingredients, initialEntries = [], initialMealType 
 
   function renderGramControl(ing: Ingredient, entry: SelectedEntry | undefined) {
     const grams = entry?.amountGrams ?? 0
+    const isStk = ing.unit === 'stk' && ing.gramsPerUnit
+
+    if (isStk) {
+      const count = Math.max(1, Math.round(grams / ing.gramsPerUnit!))
+      return (
+        <div className="flex items-center gap-1 shrink-0">
+          <button onClick={() => updateAmount(ing.id, Math.max(ing.gramsPerUnit!, (count - 1) * ing.gramsPerUnit!))} className="w-7 h-7 rounded-full bg-gray-100 dark:bg-[#2c2c2e] flex items-center justify-center text-sm font-bold">−</button>
+          <span className="w-14 text-center text-xs font-semibold text-orange-500">{count} Stk.</span>
+          <button onClick={() => updateAmount(ing.id, (count + 1) * ing.gramsPerUnit!)} className="w-7 h-7 rounded-full bg-gray-100 dark:bg-[#2c2c2e] flex items-center justify-center text-sm font-bold">+</button>
+        </div>
+      )
+    }
+
     return (
       <div className="flex items-center gap-1 shrink-0">
         <button onClick={() => updateAmount(ing.id, grams - 25)} className="w-7 h-7 rounded-full bg-gray-100 dark:bg-[#2c2c2e] flex items-center justify-center text-sm font-bold">−</button>
@@ -145,6 +159,11 @@ export function MealBuilder({ ingredients, initialEntries = [], initialMealType 
               <span className="text-sm font-medium">{ing.name}</span>
               {ing.isFavorite && <span className="text-yellow-400 text-xs">★</span>}
               {seasonal && <span className="text-sm">🍃</span>}
+              {dietaryRestrictions && ing.allergens?.some(a => dietaryRestrictions.includes(a)) && (
+                <span className="text-[10px] px-1.5 py-0.5 rounded-full font-medium bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300">
+                  ⚠ {ing.allergens!.filter(a => dietaryRestrictions.includes(a)).join(', ')}
+                </span>
+              )}
               {isCycleRec && (
                 <span className="text-[10px] px-1.5 py-0.5 rounded-full font-medium bg-pink-100 text-pink-800 dark:bg-pink-900 dark:text-pink-200">♥ {cyclePhase}</span>
               )}
@@ -328,6 +347,15 @@ export function MealBuilder({ ingredients, initialEntries = [], initialMealType 
             <div className="mb-6">
               <MacroRing proteinG={recipe.totalProtein} carbsG={recipe.totalCarbs} fatG={recipe.totalFat} />
             </div>
+            <h3 className="font-semibold mb-3">Zutaten</h3>
+            <ul className="space-y-1 mb-6">
+              {recipe.ingredientList.map((item, i) => (
+                <li key={i} className="flex items-start gap-2 text-sm">
+                  <span className="text-orange-400 mt-0.5 shrink-0">·</span>
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
             <h3 className="font-semibold mb-3">Zubereitung</h3>
             <ol className="space-y-3 mb-6">
               {recipe.steps.map((step, i) => (

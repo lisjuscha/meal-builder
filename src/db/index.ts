@@ -31,12 +31,15 @@ export async function getDB(): Promise<IDBPDatabase<MealBuilderDB>> {
   return dbInstance
 }
 
+const SEED_VERSION = '2'
+
 async function seedIfEmpty(db: IDBPDatabase<MealBuilderDB>) {
   const count = await db.count('ingredients')
   if (count === 0) {
     const tx = db.transaction('ingredients', 'readwrite')
     await Promise.all(seedIngredients.map(i => tx.store.put(i)))
     await tx.done
+    localStorage.setItem('seedVersion', SEED_VERSION)
   } else {
     // Add any new seed ingredients that don't exist yet (so existing users get new ones)
     const existingKeys = await db.getAllKeys('ingredients')
@@ -46,6 +49,27 @@ async function seedIfEmpty(db: IDBPDatabase<MealBuilderDB>) {
       const tx = db.transaction('ingredients', 'readwrite')
       await Promise.all(missing.map(i => tx.store.put(i)))
       await tx.done
+    }
+    // Migrate existing ingredients with new fields (unit, allergens) when seed version changes
+    if (localStorage.getItem('seedVersion') !== SEED_VERSION) {
+      const all = await db.getAll('ingredients')
+      const seedMap = new Map(seedIngredients.map(s => [s.id, s]))
+      const tx = db.transaction('ingredients', 'readwrite')
+      for (const existing of all) {
+        const seed = seedMap.get(existing.id)
+        if (seed) {
+          const updated: Ingredient = { ...existing }
+          if (seed.unit !== undefined) updated.unit = seed.unit
+          else delete updated.unit
+          if (seed.gramsPerUnit !== undefined) updated.gramsPerUnit = seed.gramsPerUnit
+          else delete updated.gramsPerUnit
+          if (seed.allergens !== undefined) updated.allergens = seed.allergens
+          else delete updated.allergens
+          tx.store.put(updated)
+        }
+      }
+      await tx.done
+      localStorage.setItem('seedVersion', SEED_VERSION)
     }
   }
 }
