@@ -15,13 +15,19 @@ export function ShoppingPage({ items, ingredients, onToggle, onRemove, onClear }
   const checked = items.filter(i => i.checked)
 
   return (
-    <div className="px-4 pt-4 pb-6">
-      <div className="flex items-center justify-between mb-4">
-        <h1 className="text-xl font-bold">Einkaufsliste</h1>
-        {items.length > 0 && (
-          <button onClick={onClear} className="text-sm text-red-400 font-medium">Leeren</button>
-        )}
+    <div>
+      <div
+        className="sticky top-0 z-10 bg-[#f2f2f7] dark:bg-black px-4 pb-3"
+        style={{ paddingTop: 'env(safe-area-inset-top)' }}
+      >
+        <div className="flex items-center justify-between pt-2">
+          <h1 className="text-xl font-bold">Einkaufsliste</h1>
+          {items.length > 0 && (
+            <button onClick={onClear} className="text-sm text-red-400 font-medium">Leeren</button>
+          )}
+        </div>
       </div>
+      <div className="px-4 pb-6">
 
       {items.length === 0 ? (
         <div className="bg-white dark:bg-[#1c1c1e] rounded-xl p-8 text-center text-sm text-gray-400">
@@ -75,6 +81,7 @@ export function ShoppingPage({ items, ingredients, onToggle, onRemove, onClear }
           )}
         </div>
       )}
+      </div>
     </div>
   )
 }

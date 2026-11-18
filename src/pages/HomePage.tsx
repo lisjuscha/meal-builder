@@ -71,7 +71,16 @@ export function HomePage({ meals, templates, ingredients, dailyKcalGoal, protein
   }
 
   return (
-    <div className="px-4 pt-4 pb-6 space-y-4">
+    <div>
+      <div
+        className="sticky top-0 z-10 bg-[#f2f2f7] dark:bg-black px-4 pb-3"
+        style={{ paddingTop: 'env(safe-area-inset-top)' }}
+      >
+        <div className="pt-2">
+          <h1 className="text-xl font-bold">Heute</h1>
+        </div>
+      </div>
+      <div className="px-4 pb-6 space-y-4">
       {/* Today summary */}
       <div className="bg-white dark:bg-[#1c1c1e] rounded-xl p-4">
         <div className="flex items-center justify-between mb-2">
@@ -220,6 +229,7 @@ export function HomePage({ meals, templates, ingredients, dailyKcalGoal, protein
           onReuse={() => { onOpenBuilder({ entries: selectedMeal.ingredientEntries }); setSelectedMeal(null) }}
         />
       )}
+      </div>
     </div>
   )
 }

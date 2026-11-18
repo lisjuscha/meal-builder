@@ -41,8 +41,16 @@ export function TrendsPage({ meals, ingredients }: Props) {
   }, [meals, days, ingMap])
 
   return (
-    <div className="px-4 pt-4 pb-6 space-y-4">
-      <h1 className="text-xl font-bold">Wochenrückblick</h1>
+    <div>
+      <div
+        className="sticky top-0 z-10 bg-[#f2f2f7] dark:bg-black px-4 pb-3"
+        style={{ paddingTop: 'env(safe-area-inset-top)' }}
+      >
+        <div className="pt-2">
+          <h1 className="text-xl font-bold">Wochenrückblick</h1>
+        </div>
+      </div>
+      <div className="px-4 pb-6 space-y-4">
 
       {/* Metric toggle */}
       <div className="flex gap-2">
@@ -97,6 +105,7 @@ export function TrendsPage({ meals, ingredients }: Props) {
           </div>
         </div>
       )}
+      </div>
     </div>
   )
 }
